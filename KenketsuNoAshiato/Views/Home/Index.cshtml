@@ -1,0 +1,225 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>献血のあしあと</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+            color: #333;
+            background: #fafafa;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        h1, h2 {
+            color: #b71c1c;
+            margin-bottom: 0.5em;
+        }
+
+        h2 {
+            font-size: 1.4em;
+            border-left: 5px solid #d32f2f;
+            padding-left: 10px;
+        }
+
+        .hero {
+            text-align: center;
+            margin: 40px 0 60px;
+        }
+
+            .hero img {
+                width: 100%;
+                max-width: 700px;
+                border-radius: 12px;
+                margin: 20px 0;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+
+        .start-button {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 14px 32px;
+            background: #d32f2f;
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.1em;
+            border-radius: 30px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+
+        section {
+            margin-bottom: 30px;
+            background: #fff;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        .note {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.8em;
+            color: #777;
+            margin: 40px 0 20px;
+        }
+
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #fff;
+            max-width: 600px;
+            padding: 24px;
+            border-radius: 12px;
+        }
+
+        .modal-buttons {
+            text-align: right;
+            margin-top: 20px;
+        }
+
+            .modal-buttons button {
+                margin-left: 10px;
+                padding: 8px 16px;
+            }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 10px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="hero">
+            <img src="~/image/ashiatologo.png" alt="献血のあしあと"><br />
+            献血の記録を、楽しく、静かに、続けるためのスタンプ帳
+            <br />
+            <a class="start-button" onclick="openModal()">利用を開始する</a>
+        </div>
+
+        <section>
+            <h2>このサービスでできること</h2>
+            <ul>
+                <li>献血ルームごとの訪問履歴をスタンプ形式で記録（利用方法は見ればすぐにわかります）</li>
+                <li>ログイン・会員登録なし</li>
+                <li>あなた専用のURLで管理</li>
+            </ul>
+        </section>
+
+        <!-- ご利用にあたって（共通化） -->
+        <section>
+            <h2>ご利用にあたって</h2>
+            <div id="terms-section"></div>
+        </section>
+
+        <section>
+            <h2>現在の機能限定状況</h2>
+            <ul>
+                <li>トップ画像はAI生成のため漢字がおかしい</li>
+                <li>献血ルームは現存する東京都・神奈川のみ対応</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>今後の機能追加予定</h2>
+            <ul>
+                <li>タイトル画像の変更</li>
+                <li>全国の献血ルーム対応</li>
+                <li>閉鎖済み献血ルーム対応</li>
+                <li>URLの記録機能を簡単にする機能（コピペ、ブックマーク）</li>
+                <li>SNSへのシェア機能</li>
+                <li>利用停止（記録削除）機能</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>更新履歴</h2>
+            <textarea readonly>
+2026-01-20 トップページのみ公開（機能は無し）
+        </textarea>
+        </section>
+
+        <footer>
+            運営者：<a href="https://x.com/noobow">ぬーぼー</a>
+        </footer>
+
+    </div>
+
+    <template id="terms-template">
+        <ul>
+            <li>本サービスは個人開発の非公式サービスです。日本赤十字社とは一切関係ありません。</li>
+            <li>次のページで発行されるURLがあなたの専用ページになります。ブックマークなどをしてご使用ください。</li>
+            <li>このURLは第三者が知ると閲覧可能です。機微な情報は含みませんが情報流出の責任は当方では負いません。</li>
+            <li>記録の流出・消失が発生しないよう最大限努力しますが、個人の趣味の範囲での運営となることをご了解ください。</li>
+        </ul>
+    </template>
+
+    <div class="modal" id="startModal">
+        <div class="modal-content">
+            <h2>ご利用にあたって</h2>
+            <div id="terms-modal" class="note"></div>
+
+            <p class="note">以上に同意いただける場合、利用を開始してください。</p>
+
+            <div class="modal-buttons">
+                <button onclick="closeModal()">キャンセル</button>
+                <button onclick="startService()">同意して開始</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById("startModal").style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById("startModal").style.display = "none";
+        }
+
+        function startService() {
+            window.location.href = "/Register";
+        }
+
+        // 注意事項の共通展開
+        document.addEventListener("DOMContentLoaded", () => {
+            const template = document.getElementById("terms-template");
+
+            document.getElementById("terms-section")
+                .appendChild(template.content.cloneNode(true));
+
+            document.getElementById("terms-modal")
+                .appendChild(template.content.cloneNode(true));
+        });
+    </script>
+
+</body>
+</html>
