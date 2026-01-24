@@ -16,4 +16,8 @@ public partial class User
 
     [Column("last_access_at")]
     public DateTime? LastAccessAt { get; set; }
+
+    [Column("user_name")]
+    [StringLength(50)]
+    public string? UserName { get; set; }
 }

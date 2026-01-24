@@ -6,7 +6,7 @@ namespace KenketsuNoAshiato.Controllers
 {
     public class RegisterController : Controller
     {
-        public IActionResult Index()
+        public IActionResult Index(string? userName)
         {
             string generatedId = GenerateId();
             AshiatoContext dbContext = new ();
@@ -17,6 +17,7 @@ namespace KenketsuNoAshiato.Controllers
             User newUser = new ()
             {
                 UserId = generatedId,
+                UserName = userName,
                 RegisteredAt = DateTime.Now,
                 LastAccessAt = DateTime.Now
             };

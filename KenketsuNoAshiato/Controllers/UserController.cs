@@ -21,7 +21,7 @@ namespace KenketsuNoAshiato.Controllers
                 dbContext.SaveChanges();
             }
 
-            UserModel usermodel = new() { UserId = id };
+            UserModel usermodel = new() { User = u};
             usermodel.Rooms = dbContext.KenketsuRooms.Include(r => r.Pref).ThenInclude(p => p!.CenterBlock)
                 .OrderBy(r => r.Pref!.CenterBlock!.DisplayOrder).ThenBy(r => r.Pref!.DisplayOrder).ThenBy(r => r.DisplayOrder).ToArray();
 

@@ -112,6 +112,37 @@
             padding: 10px;
             font-family: monospace;
         }
+
+        .name-field {
+            margin-top: 20px;
+        }
+
+            .name-field label {
+                display: block;
+                font-weight: bold;
+                margin-bottom: 6px;
+                color: #b71c1c;
+            }
+
+            .name-field input[type="text"] {
+                width: 100%;
+                padding: 10px 14px;
+                border-radius: 10px;
+                border: 1px solid #ccc;
+                font-size: 1em;
+                box-sizing: border-box;
+            }
+
+                .name-field input[type="text"]:focus {
+                    outline: none;
+                    border-color: #d32f2f;
+                    box-shadow: 0 0 0 2px rgba(211,47,47,0.1);
+                }
+
+            .name-field .note {
+                margin-top: 6px;
+            }
+
     </style>
 </head>
 <body>
@@ -187,7 +218,16 @@
         <div class="modal-content">
             <h2>ご利用にあたって</h2>
             <div id="terms-modal" class="note"></div>
-
+            <div class="name-field">
+                <label for="userName">お名前（ニックネーム）</label>
+                <input type="text"
+                       id="userName"
+                       maxlength="50"
+                       placeholder="例：ぬーぼー">
+                <div class="note">
+                    入力は任意です。スタンプ帳内での表示名として使用されます。入力いただいた場合は、URLが分からなくなった場合に問い合わせいただければ管理人で調べて回答することができます。
+                </div>
+            </div>
             <p class="note">以上に同意いただける場合、利用を開始してください。</p>
 
             <div class="modal-buttons">
@@ -207,7 +247,10 @@
         }
 
         function startService() {
-            window.location.href = "/Register";
+            const nameInput = document.getElementById("userName");
+            const userName = nameInput.value;
+
+            window.location.href = "/Register?userName=" + encodeURIComponent(userName);
         }
 
         // 注意事項の共通展開
