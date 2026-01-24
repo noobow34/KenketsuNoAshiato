@@ -10,9 +10,15 @@ namespace KenketsuNoAshiato.Controllers
         public IActionResult Index(string id)
         {
             AshiatoContext dbContext = new();
-            if (string.IsNullOrEmpty(id) || dbContext.Users.Find(id) == null)
+            User? u = dbContext.Users.Find(id);
+            if (string.IsNullOrEmpty(id) || u == null)
             {
                 return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                u.LastAccessAt = DateTime.Now;
+                dbContext.SaveChanges();
             }
 
             UserModel usermodel = new() { UserId = id };
