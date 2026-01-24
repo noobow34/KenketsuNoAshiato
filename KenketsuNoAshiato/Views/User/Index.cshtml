@@ -1,0 +1,757 @@
+﻿@using KenketsuNoAshiato.Models
+@model UserModel
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>献血のあしあと</title>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+            user-select: none;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .status-bar {
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: bold;
+            background: #ffebeb;
+            padding: 10px;
+            border-radius: 8px;
+            color: #d32f2f;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .reset-btn {
+            background: #fff;
+            border: 1px solid #d32f2f;
+            color: #d32f2f;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 2px 10px;
+            font-size: 0.8em;
+        }
+
+        .region-section {
+            margin-bottom: 60px;
+        }
+
+        .region-title {
+            border-bottom: 2px solid #ff0000;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        /* ===== 地区アコーディオン ===== */
+        .accordion-header {
+            cursor: pointer;
+            padding: 14px 16px;
+            background: #ffecec;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .accordion-header::after {
+            content: "▼";
+            margin-left: 10px;
+            transition: transform 0.2s;
+        }
+
+        .accordion-header.open::after {
+            transform: rotate(-180deg);
+        }
+
+        .accordion-content {
+            display: none;
+            margin-bottom: 40px;
+        }
+
+            .accordion-content.open {
+                display: block;
+            }
+
+        /* 地区進捗 */
+        .region-center {
+            text-align: center;
+            min-width: 170px;
+        }
+
+        .region-text {
+            font-size: 0.85em;
+            color: #444;
+        }
+
+        .region-bar {
+            height: 6px;
+            background: #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .region-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: #d32f2f;
+            transition: width 0.3s;
+        }
+
+        /* ===== 都道府県 ===== */
+        .pref-header {
+            cursor: pointer;
+            padding: 10px 12px;
+            margin: 18px 0 8px;
+            background: #fafafa;
+            border-left: 4px solid #d32f2f;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .pref-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pref-arrow {
+            font-size: 0.8em;
+            transition: transform 0.2s;
+        }
+
+        .pref-header.open .pref-arrow {
+            transform: rotate(-180deg);
+        }
+
+        /* 県進捗（省スペース） */
+        .pref-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8em;
+            color: #444;
+        }
+
+        .pref-bar {
+            width: 60px;
+            height: 5px;
+            background: #ddd;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .pref-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: #d32f2f;
+            transition: width 0.3s;
+        }
+
+        .pref-content {
+            display: none;
+        }
+
+        .pref-content.open {
+            display: block;
+        }
+
+        .room-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .room-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+            padding-bottom: 10px;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.1s;
+        }
+
+            .room-card:active {
+            transform: scale(0.98);
+        }
+
+        .room-card:focus {
+            outline: 2px dashed #d32f2f;
+        }
+
+        .room-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            background-color: #f0f0f0;
+            display: block;
+            transition: opacity 0.3s;
+        }
+
+        .room-name {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 0.95em;
+            padding: 0 10px;
+        }
+
+        /* 訪問済みスタイル */
+        .room-card.visited .room-image {
+            opacity: 0.5;
+            filter: grayscale(30%);
+        }
+
+        /* スタンプ */
+        .stamp-mark {
+            position: absolute;
+            inset: 0; /* Flex中央配置のため */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .animate-stamp .stamp-inner {
+            animation: stamp-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .stamp-inner {
+            width: 90px;
+            height: 90px;
+            border: 3px double #d32f2f;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.9);
+            color: #d32f2f;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            /* ここで回転はJSでランダムに追加 */
+        }
+
+        .stamp-title {
+            font-size: 28px;
+            font-weight: bold;
+            line-height: 1;
+            margin-top: 5px;
+        }
+
+        .stamp-date-line {
+            width: 70%;
+            height: 1px;
+            background-color: #d32f2f;
+            margin: 4px 0;
+        }
+
+        .stamp-date {
+            font-size: 13px;
+            font-weight: bold;
+            font-family: monospace;
+        }
+
+        @@keyframes stamp-pop {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* モーダル日付入力 */
+        #dateModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+        }
+
+        #dateModalContent {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        #dateModal input[type="date"] {
+            font-size: 1em;
+            padding: 5px;
+        }
+
+        #dateModal button {
+            margin: 10px 5px 0 5px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid #d32f2f;
+            background: #fff;
+            color: #d32f2f;
+            cursor: pointer;
+        }
+
+        .status-bar.overall {
+            background: #fff5f5;
+            border: 2px solid #d32f2f;
+            align-items: center;
+        }
+
+        .overall-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #d32f2f;
+        }
+
+        .overall-left,
+        .overall-center,
+        .overall-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .overall-center {
+            flex-direction: column;
+            min-width: 200px;
+        }
+
+        .overall-center .region-bar {
+            width: 180px;
+        }
+
+        .bookmark-guide {
+            background: #fff5f5;
+            border: 2px dashed #d32f2f;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .bookmark-title {
+            font-size: 0.9em;
+            font-weight: bold;
+            color: #d32f2f;
+            margin-bottom: 10px;
+        }
+
+        .bookmark-actions {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bookmark-actions input {
+            width: 320px;
+            padding: 6px 8px;
+            font-size: 0.85em;
+            border: 1px solid #d32f2f;
+            border-radius: 6px;
+            background: #fff;
+            color: #333;
+        }
+
+        .bookmark-actions input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.15);
+        }
+
+        .bookmark-actions button {
+            padding: 6px 12px;
+            font-size: 0.85em;
+            border-radius: 6px;
+            border: 1px solid #d32f2f;
+            background: #fff;
+            color: #d32f2f;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .bookmark-actions button:hover {
+            background: #ffecec;
+        }
+
+        .bookmark-actions button:active {
+            transform: scale(0.97);
+        }
+
+        .bookmark-message {
+            display: none;
+            margin-top: 6px;
+            font-size: 0.8em;
+            color: #2e7d32;
+        }
+
+    </style>
+</head>
+<body data-user-id="@Model.UserId">
+
+    <h1>献血のあしあと</h1>
+    <div class="status-bar overall">
+        <div class="overall-left">
+            <span class="overall-title">全国進捗</span>
+        </div>
+
+        <div class="overall-center">
+            <div class="region-text" id="overall-text">0 / 0（0%）</div>
+            <div class="region-bar">
+                <div class="region-bar-fill" id="overall-bar"></div>
+            </div>
+        </div>
+
+        <div class="overall-right">
+            <button id="reset-all" class="reset-btn">全記録削除</button>
+        </div>
+    </div>
+    <div class="bookmark-guide">
+        <div class="bookmark-title">
+            📌 このページのURLをブックマークしてご使用ください
+        </div>
+
+        <div class="bookmark-actions">
+            <input type="text" id="pageUrl" readonly>
+            <button id="copyUrlBtn">URLコピー</button>
+        </div>
+
+        <div class="bookmark-message" id="copyMessage">
+            ✔ URLをコピーしました
+        </div>
+    </div>
+    <section>
+    @{
+        var rooms = Model.Rooms;
+        int currentBlock = -1;
+        int currentPref = -1;
+        foreach(var room in rooms)
+        {
+            if (room.Pref!.CenterBlockId != currentBlock)
+            {
+                if (currentBlock != -1)
+                {
+                    @:</div>
+                }
+                currentBlock = room.Pref.CenterBlockId;
+                <text>
+                <div class="accordion-header open" data-region="@currentBlock">
+                    <span>@room.Pref.CenterBlock!.CenterBlockName</span>
+                    <div class="region-center">
+                        <div class="region-text" id="region-@currentBlock-text">0 / 0（0%）</div>
+                        <div class="region-bar">
+                            <div class="region-bar-fill" id="region-@currentBlock-bar"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-content open">
+                </text>
+            }
+
+            if (room.PrefId != currentPref)
+            {
+                if (currentPref != -1)
+                {
+                        @:</div>
+                        @:</div>
+                }
+                currentPref = room.PrefId;
+                <text>
+                        <div class="pref-header open" data-pref="@currentPref">
+                        <div class="pref-left">
+                            <span class="pref-arrow">▼</span>
+                            @room.Pref.PrefName
+                        </div>
+                        <div class="pref-right">
+                            <span id="pref-@room.PrefId-text">0 / 0</span>
+                            <div class="pref-bar">
+                                <div class="pref-bar-fill" id="pref-@room.PrefId-bar"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pref-content open">
+                        <div class="room-list">
+                </text>
+            }
+            <text>
+            <div class="room-card" data-id="@room.RoomId">
+                <img src="@room.ImagePath" alt="@room.RoomName" class="room-image">
+                <div class="room-name">@room.RoomName</div>
+            </div>
+            </text>
+        }
+            @:</div>
+        @:</div>
+        @:</div>
+    }
+    </section>
+
+    <!-- 日付入力モーダル -->
+    <div id="dateModal">
+        <div id="dateModalContent">
+            <p>訪問日を選択してください</p>
+            <input type="date" id="modalDateInput">
+            <div>
+                <button id="modalSaveBtn">保存</button>
+                <button id="modalDeleteBtn">削除</button>
+                <button id="modalCancelBtn">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.room-card');
+            const countVisitedEl = document.getElementById('count-visited');
+            const countTotalEl = document.getElementById('count-total');
+            const resetBtn = document.getElementById('reset-all');
+            const userId = '@Model.UserId';
+
+            let visitedData = {};
+            let currentCard = null;
+
+            // ブロック進捗
+            const updateRegionProgress = () => {
+                document.querySelectorAll('.accordion-header[data-region]').forEach(header => {
+                    const region = header.dataset.region;
+                    const cards = header.nextElementSibling.querySelectorAll('.room-card');
+
+                    const total = cards.length;
+                    let visited = 0;
+                    cards.forEach(c => { if (visitedData[c.dataset.id]) visited++; });
+
+                    const percent = total === 0 ? 0 : Math.floor(visited / total * 100);
+
+                    document.getElementById(`region-${region}-text`)
+                        .textContent = `${visited} / ${total}（${percent}%）`;
+                    document.getElementById(`region-${region}-bar`)
+                        .style.width = percent + "%";
+                });
+            };
+
+            // 都道府県進捗
+            const updatePrefProgress = () => {
+                document.querySelectorAll('.pref-header[data-pref]').forEach(header => {
+                    const pref = header.dataset.pref;
+                    const cards = header.nextElementSibling.querySelectorAll('.room-card');
+
+                    const total = cards.length;
+                    let visited = 0;
+                    cards.forEach(c => { if (visitedData[c.dataset.id]) visited++; });
+
+                    const percent = total === 0 ? 0 : Math.floor(visited / total * 100);
+
+                    document.getElementById(`pref-${pref}-text`).textContent = `${visited} / ${total}`;
+                    document.getElementById(`pref-${pref}-bar`).style.width = percent + "%";
+                });
+            };
+
+            // 全国進捗
+            const updateOverallProgress = () => {
+                const total = cards.length;
+                let visited = 0;
+
+                cards.forEach(c => {
+                    if (visitedData[c.dataset.id]) visited++;
+                });
+
+                const percent = total === 0 ? 0 : Math.floor(visited / total * 100);
+
+                document.getElementById('overall-text')
+                    .textContent = `${visited} / ${total}（${percent}%）`;
+                document.getElementById('overall-bar')
+                    .style.width = percent + "%";
+            };
+
+            // 初期ロード
+            const loadDataFromServer = async (userId) => {
+                const res = await fetch('/Data/GetAll?userId=@Model.UserId');
+                const list = await res.json();
+
+                visitedData = {};
+                list.forEach(x => {
+                    visitedData[x.roomId] = {
+                        date: x.date,
+                        angle: x.angle
+                    };
+                });
+
+                renderView();
+            };
+
+            // 保存
+            const saveToServer = async (userId, id, date, angle) => {
+                await fetch('/Data/Save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `userId=${userId}&roomId=${id}&date=${date}&angle=${angle}`
+                });
+            };
+
+            // 削除
+            const deleteFromServer = async (userId, id) => {
+                await fetch('/Data/Delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body:  `userId=${userId}&roomId=${id}`
+                });
+            };
+
+            const renderView = () => {
+                cards.forEach(card => {
+                    card.classList.remove('visited');
+                    const existing = card.querySelector('.stamp-mark');
+                    if (existing) existing.remove();
+                });
+
+                let count = 0;
+                cards.forEach(card => {
+                    const id = card.dataset.id;
+                    if (visitedData[id]) {
+                        count++;
+                        card.classList.add('visited');
+
+                        const angle = visitedData[id].angle;
+                        const date = visitedData[id].date;
+
+                        const stampHtml = `
+                            <div class="stamp-mark">
+                                <div class="stamp-inner" style="transform: rotate(${angle}deg);">
+                                    <span class="stamp-title">済</span>
+                                    <div class="stamp-date-line"></div>
+                                    <span class="stamp-date">${date}</span>
+                                </div>
+                            </div>`;
+                        card.insertAdjacentHTML('beforeend', stampHtml);
+                    }
+                });
+
+                updateRegionProgress();
+                updatePrefProgress();
+                updateOverallProgress();
+            };
+
+            // モーダル
+            const openModal = (card) => {
+                currentCard = card;
+                const id = card.dataset.id;
+
+                const modal = document.getElementById('dateModal');
+                const input = document.getElementById('modalDateInput');
+
+                input.value = visitedData[id]?.date ?? new Date().toISOString().slice(0,10);
+                modal.style.display = 'flex';
+            };
+
+            const closeModal = () => {
+                document.getElementById('dateModal').style.display = 'none';
+            };
+
+            // アコーディオン
+            document.querySelectorAll('.accordion-header').forEach(h => {
+                h.addEventListener('click', () => {
+                    h.classList.toggle('open');
+                    h.nextElementSibling.classList.toggle('open');
+                });
+            });
+            document.querySelectorAll('.pref-header').forEach(h => {
+                h.addEventListener('click', () => {
+                    h.classList.toggle('open');
+                    h.nextElementSibling.classList.toggle('open');
+                });
+            });
+
+            // カードクリック
+            cards.forEach(card => {
+                card.addEventListener('click', () => openModal(card));
+            });
+
+            document.getElementById('modalSaveBtn').addEventListener('click', async () => {
+                const date = document.getElementById('modalDateInput').value;
+                const id = currentCard.dataset.id;
+
+                if (!visitedData[id]) {
+                    visitedData[id] = {
+                        angle: (Math.random() * 30 - 15).toFixed(1)
+                    };
+                }
+
+                visitedData[id].date = date;
+
+                await saveToServer(userId, id, visitedData[id].date, visitedData[id].angle);
+                renderView();
+                closeModal();
+            });
+
+            document.getElementById('modalDeleteBtn').addEventListener('click', async () => {
+                const id = currentCard.dataset.id;
+                delete visitedData[id];
+
+                await deleteFromServer(userId,id);
+                renderView();
+                closeModal();
+            });
+
+            document.getElementById('modalCancelBtn').addEventListener('click', async () => {
+                closeModal();
+            });
+
+            resetBtn.addEventListener('click', async () => {
+                if (!confirm('本当に全データ削除しますか？')) return;
+
+                await fetch('/Data/Delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body:  `userId=${userId}`
+                });
+
+                visitedData = {};
+                renderView();
+            });
+
+            // URL表示
+            const urlInput = document.getElementById('pageUrl');
+            urlInput.value = location.href;
+
+            // コピー
+            document.getElementById('copyUrlBtn').addEventListener('click', async () => {
+                await navigator.clipboard.writeText(location.href);
+                const msg = document.getElementById('copyMessage');
+                msg.style.display = "block";
+                setTimeout(() => {
+                    msg.style.display = "none";
+                }, 2000);
+            });
+
+            loadDataFromServer(userId);
+        });
+
+
+
+    </script>
+</body>
+</html>

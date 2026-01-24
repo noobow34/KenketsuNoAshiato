@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using KenketsuNoAshiato.EF;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
 
 namespace KenketsuNoAshiato.Controllers
@@ -8,7 +9,20 @@ namespace KenketsuNoAshiato.Controllers
         public IActionResult Index()
         {
             string generatedId = GenerateId();
-            return View();
+            AshiatoContext dbContext = new ();
+            while(dbContext.Users.Find(generatedId) != null)
+            {
+                generatedId = GenerateId();
+            }
+            User newUser = new ()
+            {
+                UserId = generatedId,
+                RegisteredAt = DateTime.Now,
+                LastAccessAt = DateTime.Now
+            };
+            dbContext.Users.Add(newUser);
+            dbContext.SaveChanges();
+            return RedirectToAction("Index","User", new { id = generatedId });
         }
 
         private string GenerateId(int length = 10)
