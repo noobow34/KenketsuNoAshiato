@@ -663,7 +663,15 @@
                 const modal = document.getElementById('dateModal');
                 const input = document.getElementById('modalDateInput');
 
-                input.value = visitedData[id]?.date ?? new Date().toISOString().slice(0,10);
+                const today = new Date();
+                const formatter = new Intl.DateTimeFormat('ja-JP', {
+                    timeZone: 'Asia/Tokyo',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                });
+
+                input.value = visitedData[id]?.date ?? formatter.format(today).replaceAll('/', '-');
                 modal.style.display = 'flex';
             };
 
