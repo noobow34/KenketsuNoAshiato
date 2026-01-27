@@ -21,9 +21,15 @@ namespace KenketsuNoAshiato.Controllers
                 dbContext.SaveChanges();
             }
 
-            UserModel usermodel = new() { User = u};
-            usermodel.Rooms = dbContext.KenketsuRooms.Include(r => r.Pref).ThenInclude(p => p!.CenterBlock)
-                .OrderBy(r => r.Pref!.CenterBlock!.DisplayOrder).ThenBy(r => r.Pref!.DisplayOrder).ThenBy(r => r.DisplayOrder).ToArray();
+            UserModel usermodel = new()
+            {
+                User = u,
+                Rooms = Master.KenketsuRooms
+            };
+            int[] roomsPref = usermodel.Rooms.Select(r => r.PrefId).Distinct().ToArray();
+            usermodel.Prefectures = Master.Prefectures;
+            int[] roomsCenterBlock = usermodel.Prefectures.Select(p => p.CenterBlockId).Distinct().ToArray();
+            usermodel.CenterBlocks = Master.CenterBlocks;
 
             return View(usermodel);
         }

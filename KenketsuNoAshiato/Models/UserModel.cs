@@ -6,5 +6,9 @@ namespace KenketsuNoAshiato.Models
     {
         public required User User { get; set; }
         public KenketsuRoom[] Rooms { get; set; } = [];
+
+        public CenterBlock[] CenterBlocks { get; set; } = [];
+
+        public Pref[] Prefectures { get; set; } = [];
     }
 }

@@ -1,3 +1,5 @@
+using KenketsuNoAshiato;
+
 string connectionString = Environment.GetEnvironmentVariable("KENKETSUNOASHIATO_CONNECTION_STRING") ?? "";
 Console.WriteLine($"KENKETSUNOASHIATO_CONNECTION_STRING:{connectionString?.Length ?? 0}");
 
@@ -34,5 +36,6 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+Master.Load();
 
 app.Run();

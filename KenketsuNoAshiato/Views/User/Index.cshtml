@@ -1,4 +1,5 @@
-﻿@using KenketsuNoAshiato.Models
+﻿@using KenketsuNoAshiato.EF
+@using KenketsuNoAshiato.Models
 @model UserModel
 <!DOCTYPE html>
 <html lang="ja">
@@ -466,69 +467,59 @@
         </div>
     </div>
     <section>
-    @{
-        var rooms = Model.Rooms;
-        int currentBlock = -1;
-        int currentPref = -1;
-        foreach(var room in rooms)
+        @foreach (var cb in Model.CenterBlocks)
         {
-            if (room.Pref!.CenterBlockId != currentBlock)
-            {
-                if (currentBlock != -1)
-                {
-                    @:</div>
-                }
-                currentBlock = room.Pref.CenterBlockId;
-                <text>
-                <div class="accordion-header open" data-region="@currentBlock">
-                    <span>@room.Pref.CenterBlock!.CenterBlockName</span>
+            <div class="accordion-region">
+
+                <div class="accordion-header open" data-region="@cb.CenterBlockId">
+                    <span>@cb.CenterBlockName</span>
                     <div class="region-center">
-                        <div class="region-text" id="region-@currentBlock-text">0 / 0（0%）</div>
+                        <div class="region-text" id="region-@cb.CenterBlockId-text">0 / 0（0%）</div>
                         <div class="region-bar">
-                            <div class="region-bar-fill" id="region-@currentBlock-bar"></div>
+                            <div class="region-bar-fill" id="region-@cb.CenterBlockId-bar"></div>
                         </div>
                     </div>
                 </div>
-                <div class="accordion-content open">
-                </text>
-            }
 
-            if (room.PrefId != currentPref)
-            {
-                if (currentPref != -1)
-                {
-                        @:</div>
-                        @:</div>
-                }
-                currentPref = room.PrefId;
-                <text>
-                        <div class="pref-header open" data-pref="@currentPref">
-                        <div class="pref-left">
-                            <span class="pref-arrow">▼</span>
-                            @room.Pref.PrefName
-                        </div>
-                        <div class="pref-right">
-                            <span id="pref-@room.PrefId-text">0 / 0</span>
-                            <div class="pref-bar">
-                                <div class="pref-bar-fill" id="pref-@room.PrefId-bar"></div>
+                <div class="accordion-content open">
+                    @{
+                        var prefs = Model.Prefectures
+                        .Where(p => p.CenterBlockId == cb.CenterBlockId)
+                        .OrderBy(p => p.DisplayOrder);
+                    }
+
+                    @foreach (var p in prefs)
+                    {
+                        <div class="pref-block">
+                            <div class="pref-header open" data-pref="@p.PrefId">
+                                <div class="pref-left">
+                                    <span class="pref-arrow">▼</span>
+                                    @p.PrefName
+                                </div>
+                                <div class="pref-right">
+                                    <span id="pref-@p.PrefId-text">0 / 0</span>
+                                    <div class="pref-bar">
+                                        <div class="pref-bar-fill" id="pref-@p.PrefId-bar"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pref-content open">
+                                <div class="room-list">
+                                    @foreach (var r in Model.Rooms.Where(r => r.PrefId == p.PrefId).OrderBy(r => r.DisplayOrder))
+                                    {
+                                        <div class="room-card" data-id="@r.RoomId">
+                                            <img src="@r.ImagePath" alt="@r.RoomName" class="room-image">
+                                            <div class="room-name">@r.RoomName</div>
+                                        </div>
+                                    }
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="pref-content open">
-                        <div class="room-list">
-                </text>
-            }
-            <text>
-            <div class="room-card" data-id="@room.RoomId">
-                <img src="@room.ImagePath" alt="@room.RoomName" class="room-image">
-                <div class="room-name">@room.RoomName</div>
+                    }
+                </div>
             </div>
-            </text>
         }
-            @:</div>
-        @:</div>
-        @:</div>
-    }
     </section>
 
     <!-- 日付入力モーダル -->
