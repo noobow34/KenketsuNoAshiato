@@ -19,7 +19,7 @@ public partial class VisitStamp
     public required int RoomId { get; set; }
 
     [Column("visit_date")]
-    public required DateOnly VisitDate { get; set; }
+    public DateOnly? VisitDate { get; set; }
 
     [Column("angle")]
     [Precision(5, 1)]

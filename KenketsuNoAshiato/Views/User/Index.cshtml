@@ -529,6 +529,7 @@
             <input type="date" id="modalDateInput">
             <div>
                 <button id="modalSaveBtn">保存</button>
+                <button id="modalSaveWithoutDateBtn">日付なしで保存</button>
                 <button id="modalDeleteBtn">削除</button>
                 <button id="modalCancelBtn">キャンセル</button>
             </div>
@@ -646,7 +647,10 @@
                         card.classList.add('visited');
 
                         const angle = visitedData[id].angle;
-                        const date = visitedData[id].date;
+                        let date = visitedData[id].date;
+                        if (date == null) {
+                            date = "";
+                        }
 
                         const stampHtml = `
                             <div class="stamp-mark">
@@ -719,6 +723,22 @@
                 }
 
                 visitedData[id].date = date;
+
+                await saveToServer(userId, id, visitedData[id].date, visitedData[id].angle);
+                renderView();
+                closeModal();
+            });
+
+            document.getElementById('modalSaveWithoutDateBtn').addEventListener('click', async () => {
+                const id = currentCard.dataset.id;
+
+                if (!visitedData[id]) {
+                    visitedData[id] = {
+                        angle: (Math.random() * 30 - 15).toFixed(1)
+                    };
+                }
+
+                visitedData[id].date = "";
 
                 await saveToServer(userId, id, visitedData[id].date, visitedData[id].angle);
                 renderView();

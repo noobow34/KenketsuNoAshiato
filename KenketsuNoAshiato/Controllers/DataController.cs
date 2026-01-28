@@ -21,18 +21,24 @@ namespace KenketsuNoAshiato.Controllers
         }
 
         [HttpPost]
-        public ActionResult Save(string userId, int roomId, string date, double angle)
+        public ActionResult Save(string userId, int roomId, string? date, double angle)
         {
             AshiatoContext mc = new();
             var existing = mc.VisitStamps.FirstOrDefault(x => x.RoomId == roomId && x.UserId == userId);
             var now = DateTime.Now;
+            DateOnly? vd = null;
+            if (!string.IsNullOrEmpty(date))
+            {
+                vd = DateOnly.Parse(date);
+            }
+
             if (existing == null)
             {
                 mc.VisitStamps.Add(new VisitStamp
                 {
                     RoomId = roomId,
                     UserId = userId,
-                    VisitDate = DateOnly.Parse(date),
+                    VisitDate = vd,
                     Angle = angle,
                     CreatedAt = now,
                     UpdatedAt = now
@@ -41,7 +47,7 @@ namespace KenketsuNoAshiato.Controllers
             else
             {
                 existing.UpdatedAt = now;
-                existing.VisitDate = DateOnly.Parse(date);
+                existing.VisitDate = vd;
             }
 
             mc.SaveChanges();
