@@ -528,9 +528,12 @@
             </div>
         </div>
 
-        <div class="overall-right">
-            <button id="reset-all" class="reset-btn">全記録削除</button>
-        </div>
+        @if (!Model.IsShare)
+        {
+            <div class="overall-right">
+                <button id="reset-all" class="reset-btn">全記録削除</button>
+            </div>
+        }
     </div>
     @if(!Model.IsShare)
     {
@@ -687,6 +690,19 @@
         </div>
     }
     <script>
+        const updateShareLinks = (url) => {
+        const encoded = encodeURIComponent(url);
+
+                document.getElementById('share-x').href =
+                    `https://twitter.com/intent/tweet?url=${encoded}&text=献血のあしあと`;
+
+                document.getElementById('share-fb').href =
+                    `https://www.facebook.com/sharer/sharer.php?u=${encoded}`;
+
+                document.getElementById('share-line').href =
+                    `https://social-plugins.line.me/lineit/share?url=${encoded}`;
+        };
+
         document.addEventListener('DOMContentLoaded', () => {
             const cards = document.querySelectorAll('.room-card');
             const resetBtn = document.getElementById('reset-all');
@@ -695,15 +711,7 @@
             let visitedData = {};
             let currentCard = null;
 
-            const input = document.getElementById("shareUrl");
-            if (input.value) {
-                input.value = location.origin + input.value;
-            }
-
-
-            if (shareUrlInput.value) {
-                updateShareLinks(shareUrlInput.value);
-            }
+            const shareUrlInput = document.getElementById("shareUrl");
 
             // ブロック進捗
             const updateRegionProgress = () => {
@@ -757,6 +765,15 @@
                 document.getElementById('overall-bar')
                     .style.width = percent + "%";
             };
+
+            document.getElementById('copyShareUrlBtn').addEventListener('click', async () => {
+                await navigator.clipboard.writeText(document.getElementById("shareUrl").value);
+                const msg = document.getElementById('shareMessage');
+                msg.style.display = "block";
+                setTimeout(() => {
+                    msg.style.display = "none";
+                }, 2000);
+            });
 
             // 初期ロード
             const loadDataFromServer = async (userId) => {
@@ -828,6 +845,13 @@
             });
                         
             loadDataFromServer(userId);
+            if (shareUrlInput.value) {
+                shareUrlInput.value = location.origin + shareUrlInput.value;
+            }
+            if (shareUrlInput.value) {
+                updateShareLinks(shareUrlInput.value);
+            }
+
         @{
             if (!Model.IsShare)
             {
@@ -979,22 +1003,8 @@
                         createShareBtn.disabled = true;
                         delShareBtn.disabled = false;
                         createShareBtn.textContent = 'シェア用URL発行';
-                                updateShareLinks(url);
+                        updateShareLinks(url);
                     });
-
-                        const updateShareLinks = (url) => {
-                            const encoded = encodeURIComponent(url);
-
-                            document.getElementById('share-x').href =
-                                `https://twitter.com/intent/tweet?url=${encoded}&text=献血のあしあと`;
-
-                            document.getElementById('share-fb').href =
-                                `https://www.facebook.com/sharer/sharer.php?u=${encoded}`;
-
-                            document.getElementById('share-line').href =
-                                `https://social-plugins.line.me/lineit/share?url=${encoded}`;
-                    };
-
 
                     delShareBtn.addEventListener('click', async () => {
                                     const res = await fetch('/User/DeleteShareId', {
