@@ -1006,6 +1006,9 @@
                                 copyShareBtn.disabled = true;
                                 createShareBtn.disabled = false;
                                         delShareBtn.disabled = true;
+                                document.getElementById('share-x').removeAttribute('href');
+                                document.getElementById('share-fb').removeAttribute('href')
+                                document.getElementById('share-line').removeAttribute('href')
                     });
 
                     copyShareBtn.addEventListener('click', async () => {
