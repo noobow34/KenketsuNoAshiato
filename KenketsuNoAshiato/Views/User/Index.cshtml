@@ -379,6 +379,7 @@
 
         .bookmark-actions {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
             align-items: center;
             gap: 8px;
@@ -481,6 +482,26 @@
             .share-icons a:active img {
                 transform: scale(0.95);
             }
+
+        @@media (max-width: 600px) {
+            .bookmark-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+                .bookmark-actions input {
+                    width: 100%;
+                }
+
+                .bookmark-actions button {
+                    width: 100%;
+                }
+
+            .share-icons {
+                justify-content: center;
+                margin-top: 6px;
+            }
+        }
 
 
     </style>
