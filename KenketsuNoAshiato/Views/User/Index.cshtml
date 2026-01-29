@@ -460,6 +460,29 @@
                 outline: none;
             }
 
+        .share-icons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+            .share-icons img {
+                width: 28px;
+                height: 28px;
+                cursor: pointer;
+                transition: transform 0.15s, opacity 0.15s;
+            }
+
+            .share-icons a:hover img {
+                transform: scale(1.1);
+                opacity: 0.85;
+            }
+
+            .share-icons a:active img {
+                transform: scale(0.95);
+            }
+
+
     </style>
 </head>
 <body class="@(Model.IsShare ? "share-view" : "")"
@@ -523,13 +546,17 @@
                        value="@(!string.IsNullOrEmpty(Model.ShareId) ? $"/s/{Model.ShareId}" : "")"
                        placeholder="URLを発行してください">
                 <button id="copyShareUrlBtn" @(string.IsNullOrEmpty(Model.ShareId) ? "disabled" : "")>コピー</button>
-                @{
-                    var currentUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}{Context.Request.QueryString}";
-                }
-                <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-url="@currentUrl" data-show-count=" false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-                <div class="fb-share-button" data-href="@currentUrl" data-layout="" data-size=""><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=@currentUrl&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">シェアする</a></div>
-                <div class="line-it-button" data-lang="ja" data-type="share-a" data-env="PROD" data-url="@currentUrl" data-color="default" data-size="small" data-count="false" data-ver="3" style="display: none;"></div>
-                <script src="https://www.line-website.com/social-plugins/js/thirdparty/loader.min.js" async="async" defer="defer"></script>
+                <div class="share-icons">
+                    <a id="share-x" target="_blank" title="Xでシェア">
+                        <img src="/image/share/x.svg" alt="X">
+                    </a>
+                    <a id="share-fb" target="_blank" title="Facebookでシェア">
+                        <img src="/image/share/facebook.svg" alt="Facebook">
+                    </a>
+                    <a id="share-line" target="_blank" title="LINEでシェア">
+                        <img src="/image/share/line.svg" alt="LINE">
+                    </a>
+                </div>
             </div>
             <div class="bookmark-message" id="shareMessage">
                 ✔ シェア用URLをコピーしました
@@ -549,13 +576,17 @@
                        readonly
                        value="@(!string.IsNullOrEmpty(Model.ShareId) ? $"/s/{Model.ShareId}" : "")">
                 <button id="copyShareUrlBtn" @(string.IsNullOrEmpty(Model.ShareId) ? "disabled" : "")>コピー</button>
-                <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-                @{
-                    var currentUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}{Context.Request.QueryString}";
-                }
-                <div class="fb-share-button" data-href="@currentUrl" data-layout="" data-size=""><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=@currentUrl&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">シェアする</a></div>
-                <div class="line-it-button" data-lang="ja" data-type="share-a" data-env="PROD" data-url="@currentUrl" data-color="default" data-size="small" data-count="false" data-ver="3" style="display: none;"></div>
-                <script src="https://www.line-website.com/social-plugins/js/thirdparty/loader.min.js" async="async" defer="defer"></script>
+                <div class="share-icons">
+                    <a id="share-x" target="_blank" title="Xでシェア">
+                        <img src="/image/share/x.svg" alt="X">
+                    </a>
+                    <a id="share-fb" target="_blank" title="Facebookでシェア">
+                        <img src="/image/share/facebook.svg" alt="Facebook">
+                    </a>
+                    <a id="share-line" target="_blank" title="LINEでシェア">
+                        <img src="/image/share/line.svg" alt="LINE">
+                    </a>
+                </div>
             </div>
             <div class="bookmark-message" id="shareMessage">
                 ✔ シェア用URLをコピーしました
@@ -634,8 +665,6 @@
             </div>
         </div>
     }
-    <div id="fb-root"></div>
-    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/ja_JP/sdk.js#xfbml=1&version=v24.0&appId=APP_ID"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const cards = document.querySelectorAll('.room-card');
@@ -648,6 +677,11 @@
             const input = document.getElementById("shareUrl");
             if (input.value) {
                 input.value = location.origin + input.value;
+            }
+
+
+            if (shareUrlInput.value) {
+                updateShareLinks(shareUrlInput.value);
             }
 
             // ブロック進捗
@@ -924,7 +958,22 @@
                         createShareBtn.disabled = true;
                         delShareBtn.disabled = false;
                         createShareBtn.textContent = 'シェア用URL発行';
+                                updateShareLinks(url);
                     });
+
+                        const updateShareLinks = (url) => {
+                            const encoded = encodeURIComponent(url);
+
+                            document.getElementById('share-x').href =
+                                `https://twitter.com/intent/tweet?url=${encoded}&text=献血のあしあと`;
+
+                            document.getElementById('share-fb').href =
+                                `https://www.facebook.com/sharer/sharer.php?u=${encoded}`;
+
+                            document.getElementById('share-line').href =
+                                `https://social-plugins.line.me/lineit/share?url=${encoded}`;
+                    };
+
 
                     delShareBtn.addEventListener('click', async () => {
                                     const res = await fetch('/User/DeleteShareId', {
