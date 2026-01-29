@@ -1,6 +1,5 @@
 ﻿using KenketsuNoAshiato.EF;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Cryptography;
 
 namespace KenketsuNoAshiato.Controllers
 {
@@ -8,11 +7,11 @@ namespace KenketsuNoAshiato.Controllers
     {
         public IActionResult Index(string? userName)
         {
-            string generatedId = GenerateId();
+            string generatedId = ID.GenerateId();
             AshiatoContext dbContext = new ();
             while(dbContext.Users.Find(generatedId) != null)
             {
-                generatedId = GenerateId();
+                generatedId = ID.GenerateId();
             }
             User newUser = new ()
             {
@@ -23,16 +22,7 @@ namespace KenketsuNoAshiato.Controllers
             };
             dbContext.Users.Add(newUser);
             dbContext.SaveChanges();
-            return RedirectToAction("Index","User", new { id = generatedId });
-        }
-
-        private string GenerateId(int length = 10)
-        {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            using var rng = RandomNumberGenerator.Create();
-            var bytes = new byte[length];
-            rng.GetBytes(bytes);
-            return new string(bytes.Select(b => chars[b % chars.Length]).ToArray());
+            return RedirectToAction("Editable", "User", new { id = generatedId });
         }
     }
 }

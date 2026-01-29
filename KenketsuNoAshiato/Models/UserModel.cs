@@ -10,5 +10,9 @@ namespace KenketsuNoAshiato.Models
         public CenterBlock[] CenterBlocks { get; set; } = [];
 
         public Pref[] Prefectures { get; set; } = [];
+
+        public bool IsShare { get; set; }
+
+        public string ShareId { get; set; } = string.Empty;
     }
 }

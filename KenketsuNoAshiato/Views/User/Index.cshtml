@@ -425,9 +425,45 @@
             color: #2e7d32;
         }
 
+        .bookmark-actions button:disabled {
+            color: #aaa;
+            border-color: #ddd;
+            background: #f5f5f5;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .bookmark-actions button:disabled:hover {
+            background: #f5f5f5;
+        }
+
+        .bookmark-actions button:disabled:active {
+            transform: none;
+        }
+
+        .bookmark-actions input:disabled,
+        .bookmark-actions input[readonly]:placeholder-shown {
+            color: #999;
+            background: #fafafa;
+        }
+
+        /* ===== シェア用（閲覧専用） ===== */
+        .share-view .room-card {
+            cursor: default;
+        }
+
+            .share-view .room-card:active {
+                transform: none;
+            }
+
+            .share-view .room-card:focus {
+                outline: none;
+            }
+
     </style>
 </head>
-<body data-user-id="@Model.User.UserId">
+<body class="@(Model.IsShare ? "share-view" : "")"
+      data-user-id="@Model.User.UserId">
 
     <h1>
         献血のあしあと
@@ -452,20 +488,80 @@
             <button id="reset-all" class="reset-btn">全記録削除</button>
         </div>
     </div>
-    <div class="bookmark-guide">
-        <div class="bookmark-title">
-            📌 このページのURLをブックマークしてご使用ください
-        </div>
+    @if(!Model.IsShare)
+    {
+        <div class="bookmark-guide">
+            <div class="bookmark-title">
+                📌 このページのURLをブックマークしてご使用ください
+            </div>
 
-        <div class="bookmark-actions">
-            <input type="text" id="pageUrl" readonly>
-            <button id="copyUrlBtn">URLコピー</button>
-        </div>
+            <div class="bookmark-actions">
+                <input type="text" id="pageUrl" readonly>
+                <button id="copyUrlBtn">コピー</button>
+            </div>
 
-        <div class="bookmark-message" id="copyMessage">
-            ✔ URLをコピーしました
+            <div class="bookmark-message" id="copyMessage">
+                ✔ URLをコピーしました
+            </div>
         </div>
-    </div>
+        <div class="bookmark-guide">
+            <div class="bookmark-title">
+                🔗 シェア用URLを発行（このURLでアクセスすると編集不可・閲覧専用になります）
+            </div>
+
+            <div class="bookmark-actions">
+                <button id="createShareUrlBtn" @(!string.IsNullOrEmpty(Model.ShareId) ? "disabled" : "")>
+                    シェア用URL発行
+                </button>
+                <button id="deleteShareUrlBtn"
+                        @(string.IsNullOrEmpty(Model.ShareId) ? "disabled" : "")>
+                    削除
+                </button>
+                <input type="text"
+                       id="shareUrl"
+                       readonly
+                       value="@(!string.IsNullOrEmpty(Model.ShareId) ? $"/s/{Model.ShareId}" : "")"
+                       placeholder="URLを発行してください">
+                <button id="copyShareUrlBtn" @(string.IsNullOrEmpty(Model.ShareId) ? "disabled" : "")>コピー</button>
+                <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                @{
+                    var currentUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}{Context.Request.QueryString}";
+                }
+                <div class="fb-share-button" data-href="@currentUrl" data-layout="" data-size=""><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=@currentUrl&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">シェアする</a></div>
+                <div class="line-it-button" data-lang="ja" data-type="share-a" data-env="PROD" data-url="@currentUrl" data-color="default" data-size="small" data-count="false" data-ver="3" style="display: none;"></div>
+                <script src="https://www.line-website.com/social-plugins/js/thirdparty/loader.min.js" async="async" defer="defer"></script>
+            </div>
+            <div class="bookmark-message" id="shareMessage">
+                ✔ シェア用URLをコピーしました
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="bookmark-guide">
+            <div class="bookmark-title">
+                🔗 このページはシェア用（編集不可・閲覧専用）です
+            </div>
+
+            <div class="bookmark-actions">
+                <input type="text"
+                       id="shareUrl"
+                       readonly
+                       value="@(!string.IsNullOrEmpty(Model.ShareId) ? $"/s/{Model.ShareId}" : "")">
+                <button id="copyShareUrlBtn" @(string.IsNullOrEmpty(Model.ShareId) ? "disabled" : "")>コピー</button>
+                <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                @{
+                    var currentUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}{Context.Request.QueryString}";
+                }
+                <div class="fb-share-button" data-href="@currentUrl" data-layout="" data-size=""><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=@currentUrl&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">シェアする</a></div>
+                <div class="line-it-button" data-lang="ja" data-type="share-a" data-env="PROD" data-url="@currentUrl" data-color="default" data-size="small" data-count="false" data-ver="3" style="display: none;"></div>
+                <script src="https://www.line-website.com/social-plugins/js/thirdparty/loader.min.js" async="async" defer="defer"></script>
+            </div>
+            <div class="bookmark-message" id="shareMessage">
+                ✔ シェア用URLをコピーしました
+            </div>
+        </div>
+    }
     <section>
         @foreach (var cb in Model.CenterBlocks)
         {
@@ -522,20 +618,24 @@
         }
     </section>
 
-    <!-- 日付入力モーダル -->
-    <div id="dateModal">
-        <div id="dateModalContent">
-            <p>訪問日を選択してください</p>
-            <input type="date" id="modalDateInput">
-            <div>
-                <button id="modalSaveBtn">保存</button>
-                <button id="modalSaveWithoutDateBtn">日付なしで保存</button>
-                <button id="modalDeleteBtn">削除</button>
-                <button id="modalCancelBtn">キャンセル</button>
+    @if (!Model.IsShare)
+    {
+        <!-- 日付入力モーダル -->
+        <div id="dateModal">
+            <div id="dateModalContent">
+                <p>訪問日を選択してください</p>
+                <input type="date" id="modalDateInput">
+                <div>
+                    <button id="modalSaveBtn">保存</button>
+                    <button id="modalSaveWithoutDateBtn">日付なしで保存</button>
+                    <button id="modalDeleteBtn">削除</button>
+                    <button id="modalCancelBtn">キャンセル</button>
+                </div>
             </div>
         </div>
-    </div>
-
+    }
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/ja_JP/sdk.js#xfbml=1&version=v24.0&appId=APP_ID"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const cards = document.querySelectorAll('.room-card');
@@ -544,6 +644,11 @@
 
             let visitedData = {};
             let currentCard = null;
+
+            const input = document.getElementById("shareUrl");
+            if (input.value) {
+                input.value = location.origin + input.value;
+            }
 
             // ブロック進捗
             const updateRegionProgress = () => {
@@ -614,24 +719,6 @@
                 renderView();
             };
 
-            // 保存
-            const saveToServer = async (userId, id, date, angle) => {
-                await fetch('/Data/Save', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: `userId=${userId}&roomId=${id}&date=${date}&angle=${angle}`
-                });
-            };
-
-            // 削除
-            const deleteFromServer = async (userId, id) => {
-                await fetch('/Data/Delete', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body:  `userId=${userId}&roomId=${id}`
-                });
-            };
-
             const renderView = () => {
                 cards.forEach(card => {
                     card.classList.remove('visited');
@@ -669,29 +756,7 @@
                 updateOverallProgress();
             };
 
-            // モーダル
-            const openModal = (card) => {
-                currentCard = card;
-                const id = card.dataset.id;
 
-                const modal = document.getElementById('dateModal');
-                const input = document.getElementById('modalDateInput');
-
-                const today = new Date();
-                const formatter = new Intl.DateTimeFormat('ja-JP', {
-                    timeZone: 'Asia/Tokyo',
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit'
-                });
-
-                input.value = visitedData[id]?.date ?? formatter.format(today).replaceAll('/', '-');
-                modal.style.display = 'flex';
-            };
-
-            const closeModal = () => {
-                document.getElementById('dateModal').style.display = 'none';
-            };
 
             // アコーディオン
             document.querySelectorAll('.accordion-header').forEach(h => {
@@ -706,90 +771,183 @@
                     h.nextElementSibling.classList.toggle('open');
                 });
             });
-
-            // カードクリック
-            cards.forEach(card => {
-                card.addEventListener('click', () => openModal(card));
-            });
-
-            document.getElementById('modalSaveBtn').addEventListener('click', async () => {
-                const date = document.getElementById('modalDateInput').value;
-                const id = currentCard.dataset.id;
-
-                if (!visitedData[id]) {
-                    visitedData[id] = {
-                        angle: (Math.random() * 30 - 15).toFixed(1)
-                    };
-                }
-
-                visitedData[id].date = date;
-
-                await saveToServer(userId, id, visitedData[id].date, visitedData[id].angle);
-                renderView();
-                closeModal();
-            });
-
-            document.getElementById('modalSaveWithoutDateBtn').addEventListener('click', async () => {
-                const id = currentCard.dataset.id;
-
-                if (!visitedData[id]) {
-                    visitedData[id] = {
-                        angle: (Math.random() * 30 - 15).toFixed(1)
-                    };
-                }
-
-                visitedData[id].date = "";
-
-                await saveToServer(userId, id, visitedData[id].date, visitedData[id].angle);
-                renderView();
-                closeModal();
-            });
-
-            document.getElementById('modalDeleteBtn').addEventListener('click', async () => {
-                const id = currentCard.dataset.id;
-                delete visitedData[id];
-
-                await deleteFromServer(userId,id);
-                renderView();
-                closeModal();
-            });
-
-            document.getElementById('modalCancelBtn').addEventListener('click', async () => {
-                closeModal();
-            });
-
-            resetBtn.addEventListener('click', async () => {
-                if (!confirm('本当に全データ削除しますか？')) return;
-
-                await fetch('/Data/Delete', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body:  `userId=${userId}`
-                });
-
-                visitedData = {};
-                renderView();
-            });
-
-            // URL表示
-            const urlInput = document.getElementById('pageUrl');
-            urlInput.value = location.href;
-
-            // コピー
-            document.getElementById('copyUrlBtn').addEventListener('click', async () => {
-                await navigator.clipboard.writeText(location.href);
-                const msg = document.getElementById('copyMessage');
-                msg.style.display = "block";
-                setTimeout(() => {
-                    msg.style.display = "none";
-                }, 2000);
-            });
-
+                        
             loadDataFromServer(userId);
-        });
+        @{
+            if (!Model.IsShare)
+            {
+                <text>
+                    // 保存
+                    const saveToServer = async (userId, id, date, angle) => {
+                        await fetch('/Data/Save', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: `userId=${userId}&roomId=${id}&date=${date}&angle=${angle}`
+                        });
+                    };
 
+                    // 削除
+                    const deleteFromServer = async (userId, id) => {
+                        await fetch('/Data/Delete', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body:  `userId=${userId}&roomId=${id}`
+                        });
+                    };
 
+                    // モーダル
+                    const openModal = (card) => {
+                        currentCard = card;
+                        const id = card.dataset.id;
 
+                        const modal = document.getElementById('dateModal');
+                        const input = document.getElementById('modalDateInput');
+
+                        const today = new Date();
+                        const formatter = new Intl.DateTimeFormat('ja-JP', {
+                            timeZone: 'Asia/Tokyo',
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit'
+                        });
+
+                        input.value = visitedData[id]?.date ?? formatter.format(today).replaceAll('/', '-');
+                        modal.style.display = 'flex';
+                    };
+
+                    const closeModal = () => {
+                        document.getElementById('dateModal').style.display = 'none';
+                    };
+
+                        // カードクリック
+                        cards.forEach(card => {
+                            card.addEventListener('click', () => openModal(card));
+                        });
+
+                        document.getElementById('modalSaveBtn').addEventListener('click', async () => {
+                            const date = document.getElementById('modalDateInput').value;
+                            const id = currentCard.dataset.id;
+
+                            if (!visitedData[id]) {
+                                visitedData[id] = {
+                                    angle: (Math.random() * 30 - 15).toFixed(1)
+                                };
+                            }
+
+                            visitedData[id].date = date;
+
+                            await saveToServer(userId, id, visitedData[id].date, visitedData[id].angle);
+                            renderView();
+                            closeModal();
+                        });
+
+                        document.getElementById('modalSaveWithoutDateBtn').addEventListener('click', async () => {
+                            const id = currentCard.dataset.id;
+
+                            if (!visitedData[id]) {
+                                visitedData[id] = {
+                                    angle: (Math.random() * 30 - 15).toFixed(1)
+                                };
+                            }
+
+                            visitedData[id].date = "";
+
+                            await saveToServer(userId, id, visitedData[id].date, visitedData[id].angle);
+                            renderView();
+                            closeModal();
+                        });
+
+                        document.getElementById('modalDeleteBtn').addEventListener('click', async () => {
+                            const id = currentCard.dataset.id;
+                            delete visitedData[id];
+
+                            await deleteFromServer(userId,id);
+                            renderView();
+                            closeModal();
+                        });
+
+                        document.getElementById('modalCancelBtn').addEventListener('click', async () => {
+                            closeModal();
+                        });
+
+                        resetBtn.addEventListener('click', async () => {
+                            if (!confirm('本当に全データ削除しますか？')) return;
+
+                            await fetch('/Data/Delete', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                                body:  `userId=${userId}`
+                            });
+
+                            visitedData = {};
+                            renderView();
+                        });
+
+                        // URL表示
+                        const urlInput = document.getElementById('pageUrl');
+                        urlInput.value = location.href;
+
+                        // コピー
+                        document.getElementById('copyUrlBtn').addEventListener('click', async () => {
+                            await navigator.clipboard.writeText(location.href);
+                            const msg = document.getElementById('copyMessage');
+                            msg.style.display = "block";
+                            setTimeout(() => {
+                                msg.style.display = "none";
+                            }, 2000);
+                        });
+
+                    });
+
+                    // ===== シェア用URL =====
+                    const createShareBtn = document.getElementById('createShareUrlBtn');
+                    const shareUrlInput = document.getElementById('shareUrl');
+                    const copyShareBtn = document.getElementById('copyShareUrlBtn');
+                    const shareMessage = document.getElementById('shareMessage');
+                    const delShareBtn = document.getElementById('deleteShareUrlBtn');
+
+                    createShareBtn.addEventListener('click', async () => {
+                        createShareBtn.disabled = true;
+                        createShareBtn.textContent = '発行中...';
+
+                        const res = await fetch('/User/RegisterShareId', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: `originalId=@Model.User.UserId`
+                        });
+
+                        const shareId = await res.text();
+
+                        const url = `${location.origin}/s/${shareId}`;
+                        shareUrlInput.value = url;
+                        copyShareBtn.disabled = false;
+                        createShareBtn.disabled = true;
+                        delShareBtn.disabled = false;
+                        createShareBtn.textContent = 'シェア用URL発行';
+                    });
+
+                    delShareBtn.addEventListener('click', async () => {
+                                    const res = await fetch('/User/DeleteShareId', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                                        body: `shareId=@Model.ShareId`
+                                    });
+                                     shareUrlInput.value = "";
+                                copyShareBtn.disabled = true;
+                                createShareBtn.disabled = false;
+                                        delShareBtn.disabled = true;
+                    });
+
+                    copyShareBtn.addEventListener('click', async () => {
+                        await navigator.clipboard.writeText(shareUrlInput.value);
+                        shareMessage.style.display = 'block';
+                        setTimeout(() => {
+                            shareMessage.style.display = 'none';
+                        }, 2000);
+                </text>
+            }
+        }
+                    });
     </script>
 </body>
 </html>

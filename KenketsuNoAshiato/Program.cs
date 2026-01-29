@@ -1,4 +1,5 @@
 using KenketsuNoAshiato;
+using KenketsuNoAshiato.EF;
 
 string connectionString = Environment.GetEnvironmentVariable("KENKETSUNOASHIATO_CONNECTION_STRING") ?? "";
 Console.WriteLine($"KENKETSUNOASHIATO_CONNECTION_STRING:{connectionString?.Length ?? 0}");
@@ -11,6 +12,7 @@ builder.Services.Configure<Microsoft.Extensions.WebEncoders.WebEncoderOptions>(o
 {
     options.TextEncoderSettings = new System.Text.Encodings.Web.TextEncoderSettings(System.Text.Unicode.UnicodeRanges.All);
 });
+builder.Services.AddDbContext<AshiatoContext>();
 
 var app = builder.Build();
 
@@ -24,12 +26,6 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapStaticAssets();
-
-app.MapControllerRoute(
-    name: "User",
-    pattern: "u/{id?}",
-    defaults: new { controller = "User", action = "Index" }
-);
 
 app.MapControllerRoute(
     name: "default",
