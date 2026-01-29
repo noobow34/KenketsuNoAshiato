@@ -523,10 +523,10 @@
                        value="@(!string.IsNullOrEmpty(Model.ShareId) ? $"/s/{Model.ShareId}" : "")"
                        placeholder="URLを発行してください">
                 <button id="copyShareUrlBtn" @(string.IsNullOrEmpty(Model.ShareId) ? "disabled" : "")>コピー</button>
-                <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
                 @{
                     var currentUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}{Context.Request.QueryString}";
                 }
+                <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-url="@currentUrl" data-show-count=" false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
                 <div class="fb-share-button" data-href="@currentUrl" data-layout="" data-size=""><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=@currentUrl&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">シェアする</a></div>
                 <div class="line-it-button" data-lang="ja" data-type="share-a" data-env="PROD" data-url="@currentUrl" data-color="default" data-size="small" data-count="false" data-ver="3" style="display: none;"></div>
                 <script src="https://www.line-website.com/social-plugins/js/thirdparty/loader.min.js" async="async" defer="defer"></script>
