@@ -20,6 +20,10 @@ public partial class AshiatoContext : DbContext
 
     public virtual DbSet<ShareMapping> ShareMappings { get; set; }
 
+    public virtual DbSet<CenterBlockOrder> CenterBlockOrders { get; set; }
+
+    public virtual DbSet<PrefOrder> PrefOrders { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         string connectionString = Environment.GetEnvironmentVariable("KENKETSUNOASHIATO_CONNECTION_STRING") ?? "";

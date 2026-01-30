@@ -503,7 +503,52 @@
             }
         }
 
+        .drag-handle {
+            cursor: grab;
+            margin-right: 8px;
+            font-size: 1.2em;
+            color: #999;
+        }
 
+            .drag-handle:active {
+                cursor: grabbing;
+            }
+
+        .accordion-header:hover,
+        .pref-header:hover {
+            background: #ffdede;
+            cursor: grab;
+        }
+
+        .accordion-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ===== 並び替えモード ===== */
+        .sort-mode .accordion-header {
+            background: #fff3f3;
+            cursor: grab;
+        }
+
+        .sort-mode .pref-header {
+            cursor: grab;
+        }
+
+        .sort-mode .accordion-header::after,
+        .sort-mode .pref-arrow {
+            opacity: 0.3; /* 開閉UIを弱める */
+        }
+
+        .sort-mode .drag-handle {
+            display: inline;
+            color: #d32f2f;
+        }
+
+        .drag-handle {
+            display: none; /* 通常時は非表示 */
+        }
     </style>
 </head>
 <body class="@(Model.IsShare ? "share-view" : "")"
@@ -617,13 +662,36 @@
             </div>
         </div>
     }
-    <section>
-        @foreach (var cb in Model.CenterBlocks)
+    <section id="region-sortable">
+        <div class="overall-right">
+        @if (!Model.IsShare)
         {
-            <div class="accordion-region">
+            <button id="toggleSortMode" class="reset-btn">
+                🔀 並び替え
+            </button>
+            <button id="resetSort" class="reset-btn">
+                🔄 並び替えリセット
+            </button>
+        }
+            <button id="openAllAccordion" class="reset-btn">
+                📂 すべて開く
+            </button>
+            <button id="closeAllAccordion" class="reset-btn">
+                📁 すべて閉じる
+            </button>
+            <button id="closeAllPref" class="reset-btn">
+                📁 都道府県をすべて閉じる
+            </button>
+        </div>
+        @foreach (var cb in Model.CenterBlocks.OrderBy(cb => cb.DisplayOrder))
+        {
+                <div class="accordion-region" data-center-id="@cb.CenterBlockId">
 
                 <div class="accordion-header open" data-region="@cb.CenterBlockId">
-                    <span>@cb.CenterBlockName</span>
+                    <div class="accordion-left">
+                        <span class="drag-handle">≡</span>
+                        <span class="region-name">@cb.CenterBlockName</span>
+                    </div>
                     <div class="region-center">
                         <div class="region-text" id="region-@cb.CenterBlockId-text">0 / 0（0%）</div>
                         <div class="region-bar">
@@ -632,7 +700,7 @@
                     </div>
                 </div>
 
-                <div class="accordion-content open">
+                    <div class="accordion-content open pref-sortable" data-center-id="@cb.CenterBlockId">
                     @{
                         var prefs = Model.Prefectures
                         .Where(p => p.CenterBlockId == cb.CenterBlockId)
@@ -641,9 +709,10 @@
 
                     @foreach (var p in prefs)
                     {
-                        <div class="pref-block">
+                        <div class="pref-block" data-pref-id="@p.PrefId">
                             <div class="pref-header open" data-pref="@p.PrefId">
                                 <div class="pref-left">
+                                    <span class="drag-handle">≡</span>
                                     <span class="pref-arrow">▼</span>
                                     @p.PrefName
                                 </div>
@@ -689,20 +758,18 @@
             </div>
         </div>
     }
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
     <script>
         const updateShareLinks = (url) => {
-        const encoded = encodeURIComponent(url);
-
-                document.getElementById('share-x').href =
-                    `https://twitter.com/intent/tweet?url=${encoded}&text=献血のあしあと`;
-
-                document.getElementById('share-fb').href =
-                    `https://www.facebook.com/sharer/sharer.php?u=${encoded}`;
-
-                document.getElementById('share-line').href =
-                    `https://social-plugins.line.me/lineit/share?url=${encoded}`;
+            const encoded = encodeURIComponent(url);
+            document.getElementById('share-x').href =
+                `https://twitter.com/intent/tweet?url=${encoded}&text=献血のあしあと`;
+            document.getElementById('share-fb').href =
+                `https://www.facebook.com/sharer/sharer.php?u=${encoded}`;
+            document.getElementById('share-line').href =
+                `https://social-plugins.line.me/lineit/share?url=${encoded}`;
         };
-
+        let sortMode = false;
         document.addEventListener('DOMContentLoaded', () => {
             const cards = document.querySelectorAll('.room-card');
             const resetBtn = document.getElementById('reset-all');
@@ -712,6 +779,45 @@
             let currentCard = null;
 
             const shareUrlInput = document.getElementById("shareUrl");
+
+             const openAllAccordion = () => {
+                document.querySelectorAll('.accordion-header').forEach(h => {
+                    h.classList.add('open');
+                    h.nextElementSibling?.classList.add('open');
+                });
+
+                document.querySelectorAll('.pref-header').forEach(h => {
+                    h.classList.add('open');
+                    h.nextElementSibling?.classList.add('open');
+                });
+            };
+
+            const closeAllAccordion = () => {
+                document.querySelectorAll('.accordion-header').forEach(h => {
+                    h.classList.remove('open');
+                    h.nextElementSibling?.classList.remove('open');
+                });
+                document.querySelectorAll('.pref-header').forEach(h => {
+                    h.classList.remove('open');
+                    h.nextElementSibling?.classList.remove('open');
+                });
+            };
+
+            const closeAllPref = () => {
+                document.querySelectorAll('.pref-header').forEach(h => {
+                    h.classList.remove('open');
+                    h.nextElementSibling?.classList.remove('open');
+                });
+            };
+
+            document.getElementById('openAllAccordion')
+                .addEventListener('click', openAllAccordion);
+
+            document.getElementById('closeAllAccordion')
+                .addEventListener('click', closeAllAccordion);
+
+            document.getElementById('closeAllPref')
+                .addEventListener('click', closeAllPref);
 
             // ブロック進捗
             const updateRegionProgress = () => {
@@ -828,8 +934,6 @@
                 updateOverallProgress();
             };
 
-
-
             // アコーディオン
             document.querySelectorAll('.accordion-header').forEach(h => {
                 h.addEventListener('click', () => {
@@ -852,11 +956,10 @@
                 updateShareLinks(shareUrlInput.value);
             }
 
-        @{
-            if (!Model.IsShare)
+            @if (!Model.IsShare)
             {
-                <text>
-                    // 保存
+            <text>
+                // 保存
                     const saveToServer = async (userId, id, date, angle) => {
                         await fetch('/Data/Save', {
                             method: 'POST',
@@ -952,7 +1055,7 @@
                         resetBtn.addEventListener('click', async () => {
                             if (!confirm('本当に全データ削除しますか？')) return;
 
-                            await fetch('/Data/Delete', {
+                            await fetch('/Data/Reset', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                                 body:  `userId=${userId}`
@@ -1026,11 +1129,88 @@
                         shareMessage.style.display = 'block';
                         setTimeout(() => {
                             shareMessage.style.display = 'none';
-                        }, 2000);
+                        }, 2000)
+                    });
+
+                new Sortable(document.getElementById('region-sortable'), {
+                    animation: 150,
+                    handle: '.drag-handle'
+                });
+
+                document.querySelectorAll('.pref-sortable').forEach(container => {
+                    new Sortable(container, {
+                        animation: 150,
+                        handle: '.drag-handle'
+                    });
+
+                const toggleBtn = document.getElementById('toggleSortMode');
+                toggleBtn.onclick = async () => {
+                        if (sortMode) {
+                            await saveSortOrder();
+                        }
+                        sortMode = !sortMode;
+
+                        document.body.classList.toggle('sort-mode', sortMode);
+
+                        toggleBtn.textContent = sortMode
+                            ? '✅ 並び替え完了'
+                            : '🔀 並び替え';
+                };
+
+                const resetSortBtn = document.getElementById('resetSort');
+                resetSortBtn.onclick = async () => {
+                        if (!confirm('並び順を初期状態に戻しますか？')) return;
+                        const payload = {
+                            userId: '@Model.User.UserId'
+                        };
+
+                        await fetch('/User/ResetDisplayOrder', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: `userId=@Model.User.UserId`
+                        });
+                        location.reload();
+                };
+
+                const collectSortOrder = () => {
+                    const regions = [];
+
+                    document.querySelectorAll('.accordion-region').forEach((regionEl, regionIndex) => {
+                        const centerId = regionEl.dataset.centerId;
+
+                        const prefs = [];
+                        regionEl.querySelectorAll('.pref-block').forEach((prefEl, prefIndex) => {
+                            prefs.push({
+                                prefId: prefEl.dataset.prefId,
+                                displayOrder: prefIndex
+                            });
+                        });
+
+                        regions.push({
+                            centerBlockId: centerId,
+                            displayOrder: regionIndex,
+                            prefectures: prefs
+                        });
+                    });
+
+                    return regions;
+                };
+
+                const saveSortOrder = async () => {
+                    const payload = {
+                        userId: '@Model.User.UserId',
+                        regions: collectSortOrder()
+                    };
+
+                    await fetch('/User/SaveDisplayOrder', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                };
                 </text>
             }
-        }
-                    });
+        });
     </script>
 </body>
 </html>

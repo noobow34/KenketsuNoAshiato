@@ -1,4 +1,5 @@
-﻿using KenketsuNoAshiato.EF;
+﻿using KenketsuNoAshiato.Dto;
+using KenketsuNoAshiato.EF;
 using KenketsuNoAshiato.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +28,7 @@ namespace KenketsuNoAshiato.Controllers
                 .Select(sm => sm.OriginalId)
                 .FirstOrDefault();
 
-            if(string.IsNullOrEmpty(originalId))
+            if (string.IsNullOrEmpty(originalId))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -59,7 +60,7 @@ namespace KenketsuNoAshiato.Controllers
         public IActionResult DeleteShareId(string shareId)
         {
             ShareMapping? sm = _context.ShareMappings.Find(shareId);
-            if(sm != null)
+            if (sm != null)
             {
                 _context.ShareMappings.Remove(sm);
                 _context.SaveChanges();
@@ -67,7 +68,7 @@ namespace KenketsuNoAshiato.Controllers
             return Ok();
         }
 
-        private IActionResult IndexInternal(string id, bool isShare,string fromShareId = "")
+        private IActionResult IndexInternal(string id, bool isShare, string fromShareId = "")
         {
             User? u = _context.Users.Find(id);
             if (string.IsNullOrEmpty(id) || u == null)
@@ -87,22 +88,100 @@ namespace KenketsuNoAshiato.Controllers
                 IsShare = isShare
             };
             int[] roomsPref = usermodel.Rooms.Select(r => r.PrefId).Distinct().ToArray();
-            usermodel.Prefectures = Master.Prefectures;
+            var pOrders = _context.PrefOrders
+                .Where(po => po.UserId == id && roomsPref.Contains(po.PrefId))
+                .ToDictionary(po => po.PrefId, po => po.DisplayOrder);
+            usermodel.Prefectures = Master.Prefectures.Select(p => new Pref
+            {
+                PrefId = p.PrefId,
+                DisplayOrder = p.DisplayOrder,
+                CenterBlockId = p.CenterBlockId,
+                PrefName = p.PrefName
+            }).ToArray();
+            if (pOrders.Count != 0)
+            {
+                foreach (var pref in usermodel.Prefectures)
+                {
+                    pref.DisplayOrder = pOrders[pref.PrefId];
+                }
+            }
             int[] roomsCenterBlock = usermodel.Prefectures.Select(p => p.CenterBlockId).Distinct().ToArray();
-            usermodel.CenterBlocks = Master.CenterBlocks;
+            var cOrders = _context.CenterBlockOrders
+                .Where(co => co.UserId == id && roomsCenterBlock.Contains(co.CenterBlockId))
+                .ToDictionary(co => co.CenterBlockId, co => co.DisplayOrder);
+            usermodel.CenterBlocks = Master.CenterBlocks.Select(cb => new CenterBlock
+            {
+                CenterBlockId = cb.CenterBlockId,
+                CenterBlockName = cb.CenterBlockName,
+                DisplayOrder = cb.DisplayOrder
+            }).ToArray();
+            if (cOrders.Count != 0)
+            {
+                foreach (var cb in usermodel.CenterBlocks)
+                {
+                    cb.DisplayOrder = cOrders[cb.CenterBlockId];
+                }
+            }
             if (string.IsNullOrEmpty(fromShareId))
             {
                 usermodel.ShareId = _context.ShareMappings.Where(sm => sm.OriginalId == id).FirstOrDefault()?.ShareId ?? string.Empty;
             }
-            else if(isShare)
+            else if (isShare)
             {
                 usermodel.ShareId = fromShareId;
-            }else
+            }
+            else
             {
                 usermodel.ShareId = string.Empty;
             }
 
             return View("Index", usermodel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveDisplayOrder([FromBody] SaveDisplayOrderRequest request)
+        {
+            //Delete/Insert方式で更新する
+            var cOders = _context.CenterBlockOrders.Where(cdo => cdo.UserId == request.UserId);
+            _context.CenterBlockOrders.RemoveRange(cOders);
+            var pOrders = _context.PrefOrders.Where(pdo => pdo.UserId == request.UserId);
+            _context.PrefOrders.RemoveRange(pOrders);
+
+            foreach (var item in request.Regions!)
+            {
+                CenterBlockOrder pOrder = new()
+                {
+                    UserId = request.UserId!,
+                    CenterBlockId = item.CenterBlockId,
+                    DisplayOrder = item.DisplayOrder
+                };
+                _context.CenterBlockOrders.Add(pOrder);
+                foreach (var pref in item.Prefectures!)
+                {
+                    PrefOrder cOrder = new()
+                    {
+                        UserId = request.UserId!,
+                        PrefId = pref.PrefId,
+                        DisplayOrder = pref.DisplayOrder
+                    };
+                    _context.PrefOrders.Add(cOrder);
+                }
+            }
+
+            _context.SaveChanges();
+
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetDisplayOrder(string userId)
+        {
+            var cOders = _context.CenterBlockOrders.Where(cdo => cdo.UserId == userId);
+            _context.CenterBlockOrders.RemoveRange(cOders);
+            var pOrders = _context.PrefOrders.Where(pdo => pdo.UserId == userId);
+            _context.PrefOrders.RemoveRange(pOrders);
+            _context.SaveChanges();
+            return Ok();
         }
     }
 }
