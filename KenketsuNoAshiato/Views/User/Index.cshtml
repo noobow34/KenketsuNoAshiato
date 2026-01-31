@@ -361,6 +361,19 @@
             width: 180px;
         }
 
+        .overall-right {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .control-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
         .bookmark-guide {
             background: #fff5f5;
             border: 2px dashed #d32f2f;
@@ -549,6 +562,84 @@
         .drag-handle {
             display: none; /* 通常時は非表示 */
         }
+
+        /* ===== シェア用アコーディオン（控えめ版） ===== */
+        .share-accordion {
+            background: transparent;
+            border: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+            /* ヘッダを細く */
+            .share-accordion .accordion-header {
+                background: #fafafa;
+                border: 1px dashed #ddd;
+                border-radius: 6px;
+                padding: 6px 10px;
+                font-size: 0.8em;
+                font-weight: normal;
+                color: #666;
+                margin-bottom: 0;
+            }
+
+                /* ▼アイコンも控えめに */
+                .share-accordion .accordion-header::after {
+                    font-size: 0.7em;
+                    color: #999;
+                }
+
+                /* 開いたときだけ少し主張 */
+                .share-accordion .accordion-header.open {
+                    background: #fff5f5;
+                    border-color: #d32f2f;
+                    color: #d32f2f;
+                }
+
+            /* 中身 */
+            .share-accordion .accordion-content {
+                margin-top: 8px;
+            }
+
+            .share-url {
+                width: 100%;
+                padding: 10px 12px;
+                font-size: 14px;
+                border: 1px solid #ccc;
+                border-radius: 6px;
+                background: #fafafa;
+                cursor: pointer;
+            }
+
+            /* コピー完了時 */
+            .share-url.copied {
+                background: #e8f8f0;
+                border-color: #2ecc71;
+            }
+
+        .share-url-wrapper {
+            position: relative;
+            padding: 10px;
+        }
+
+        .copy-toast {
+            position: absolute;
+            top: -8px;
+            right: 6px;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #2ecc71;
+            color: #fff;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+            .copy-toast.show {
+                opacity: 1;
+            }
+
     </style>
 </head>
 <body class="@(Model.IsShare ? "share-view" : "")"
@@ -587,48 +678,54 @@
                 📌 このページのURLをブックマークしてご使用ください
             </div>
 
-            <div class="bookmark-actions">
-                <input type="text" id="pageUrl" readonly>
-                <button id="copyUrlBtn">コピー</button>
-            </div>
-
-            <div class="bookmark-message" id="copyMessage">
-                ✔ URLをコピーしました
-            </div>
-        </div>
-        <div class="bookmark-guide">
-            <div class="bookmark-title">
-                🔗 シェア用URLを発行（このURLでアクセスすると編集不可・閲覧専用になります）
-            </div>
-
-            <div class="bookmark-actions">
-                <button id="createShareUrlBtn" @(!string.IsNullOrEmpty(Model.ShareId) ? "disabled" : "")>
-                    シェア用URL発行
-                </button>
-                <button id="deleteShareUrlBtn"
-                        @(string.IsNullOrEmpty(Model.ShareId) ? "disabled" : "")>
-                    削除
-                </button>
-                <input type="text"
-                       id="shareUrl"
-                       readonly
-                       value="@(!string.IsNullOrEmpty(Model.ShareId) ? $"/s/{Model.ShareId}" : "")"
-                       placeholder="URLを発行してください">
-                <button id="copyShareUrlBtn" @(string.IsNullOrEmpty(Model.ShareId) ? "disabled" : "")>コピー</button>
-                <div class="share-icons">
-                    <a id="share-x" target="_blank" title="Xでシェア">
-                        <img src="/image/share/x.svg" alt="X">
-                    </a>
-                    <a id="share-fb" target="_blank" title="Facebookでシェア">
-                        <img src="/image/share/facebook.svg" alt="Facebook">
-                    </a>
-                    <a id="share-line" target="_blank" title="LINEでシェア">
-                        <img src="/image/share/line.svg" alt="LINE">
-                    </a>
+            <div class="share-url-wrapper">
+                <div class="bookmark-actions">
+                    <input type="text" id="pageUrl" class="share-url" readonly>
                 </div>
             </div>
-            <div class="bookmark-message" id="shareMessage">
-                ✔ シェア用URLをコピーしました
+        </div>
+        <div class="bookmark-guide share-accordion">
+            <div class="accordion-header">
+                <span>🔗 シェア用URL</span>
+                @if (!string.IsNullOrEmpty(Model.ShareId))
+                {
+                    <small style="opacity:.6;">（発行済み）</small>
+                }
+            </div>
+
+            <div class="accordion-content">
+                <div class="bookmark-title">
+                    このURLでアクセスすると編集不可・閲覧専用になります
+                </div>
+
+                <div class="bookmark-actions">
+                    <button id="createShareUrlBtn" @(!string.IsNullOrEmpty(Model.ShareId) ? "disabled" : "")>
+                        シェア用URL発行
+                    </button>
+                    <button id="deleteShareUrlBtn"
+                            @(string.IsNullOrEmpty(Model.ShareId) ? "disabled" : "")>
+                        削除
+                    </button>
+                    <div class="share-url-wrapper">
+                    <input type="text"
+                           id="shareUrl"
+                           class="share-url"
+                           readonly
+                           value="@(!string.IsNullOrEmpty(Model.ShareId) ? $"/s/{Model.ShareId}" : "")"
+                           placeholder="URLを発行してください">
+                    </div>
+                    <div class="share-icons">
+                        <a id="share-x" target="_blank" title="Xでシェア">
+                            <img src="/image/share/x.svg" alt="X">
+                        </a>
+                        <a id="share-fb" target="_blank" title="Facebookでシェア">
+                            <img src="/image/share/facebook.svg" alt="Facebook">
+                        </a>
+                        <a id="share-line" target="_blank" title="LINEでシェア">
+                            <img src="/image/share/line.svg" alt="LINE">
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     }
@@ -640,11 +737,13 @@
             </div>
 
             <div class="bookmark-actions">
+                <div class="share-url-wrapper">
                 <input type="text"
                        id="shareUrl"
+                       class="share-url"
                        readonly
                        value="@(!string.IsNullOrEmpty(Model.ShareId) ? $"/s/{Model.ShareId}" : "")">
-                <button id="copyShareUrlBtn" @(string.IsNullOrEmpty(Model.ShareId) ? "disabled" : "")>コピー</button>
+                </div>
                 <div class="share-icons">
                     <a id="share-x" target="_blank" title="Xでシェア">
                         <img src="/image/share/x.svg" alt="X">
@@ -657,31 +756,23 @@
                     </a>
                 </div>
             </div>
-            <div class="bookmark-message" id="shareMessage">
-                ✔ シェア用URLをコピーしました
-            </div>
         </div>
     }
     <section id="region-sortable">
         <div class="overall-right">
-        @if (!Model.IsShare)
-        {
-            <button id="toggleSortMode" class="reset-btn">
-                🔀 並び替え
-            </button>
-            <button id="resetSort" class="reset-btn">
-                🔄 並び替えリセット
-            </button>
-        }
-            <button id="openAllAccordion" class="reset-btn">
-                📂 すべて開く
-            </button>
-            <button id="closeAllAccordion" class="reset-btn">
-                📁 すべて閉じる
-            </button>
-            <button id="closeAllPref" class="reset-btn">
-                📁 都道府県をすべて閉じる
-            </button>
+            <div class="control-row">
+                @if (!Model.IsShare)
+                {
+                    <button id="toggleSortMode" class="reset-btn">🔀 並び替え</button>
+                    <button id="resetSort" class="reset-btn">🔄 リセット</button>
+                }
+            </div>
+
+            <div class="control-row">
+                <button id="openAllAccordion" class="reset-btn">📂 すべて開く</button>
+                <button id="closeAllAccordion" class="reset-btn">📁 すべて閉じる</button>
+                <button id="closeAllPref" class="reset-btn">📁 都道府県閉じ</button>
+            </div>
         </div>
         @foreach (var cb in Model.CenterBlocks.OrderBy(cb => cb.DisplayOrder))
         {
@@ -780,8 +871,51 @@
 
             const shareUrlInput = document.getElementById("shareUrl");
 
+            document.querySelectorAll('.share-url').forEach(input => {
+                input.addEventListener("click", async () => {
+                    await navigator.clipboard.writeText(input.value);
+                    showCopied(input);
+                    input.classList.add("copied");
+                    setTimeout(() => {
+                        input.classList.remove("copied");
+                    }, 1200);
+            });
+
+            // PCでフォーカスされた時は全選択
+            input.addEventListener("focus", () => {
+                input.select();
+            });
+
+        });
+
+
+        const showCopied = (input) => {
+            const wrapper = input.closest(".share-url-wrapper");
+            if (!wrapper) return;
+
+            // 既存の表示があれば消す
+            wrapper.querySelectorAll(".copy-toast").forEach(e => e.remove());
+
+            const toast = document.createElement("div");
+            toast.className = "copy-toast";
+            toast.textContent = "コピーしました";
+
+            wrapper.appendChild(toast);
+
+            requestAnimationFrame(() => {
+                toast.classList.add("show");
+            });
+
+            setTimeout(() => {
+                toast.classList.remove("show");
+                setTimeout(() => toast.remove(), 300);
+            }, 1200);
+        }
+
              const openAllAccordion = () => {
-                document.querySelectorAll('.accordion-header').forEach(h => {
+                    document.querySelectorAll(
+                      '.accordion-header:not(.share-accordion .accordion-header)'
+                    ).forEach(h => {
                     h.classList.add('open');
                     h.nextElementSibling?.classList.add('open');
                 });
@@ -793,7 +927,9 @@
             };
 
             const closeAllAccordion = () => {
-                document.querySelectorAll('.accordion-header').forEach(h => {
+                   document.querySelectorAll(
+                      '.accordion-header:not(.share-accordion .accordion-header)'
+                    ).forEach(h => {
                     h.classList.remove('open');
                     h.nextElementSibling?.classList.remove('open');
                 });
@@ -872,16 +1008,7 @@
                     .style.width = percent + "%";
             };
 
-            document.getElementById('copyShareUrlBtn').addEventListener('click', async () => {
-                await navigator.clipboard.writeText(document.getElementById("shareUrl").value);
-                const msg = document.getElementById('shareMessage');
-                msg.style.display = "block";
-                setTimeout(() => {
-                    msg.style.display = "none";
-                }, 2000);
-            });
-
-            // 初期ロード
+              // 初期ロード
             const loadDataFromServer = async (userId) => {
                 const res = await fetch('/Data/GetAll?userId=@Model.User.UserId');
                 const list = await res.json();
@@ -947,7 +1074,7 @@
                     h.nextElementSibling.classList.toggle('open');
                 });
             });
-                        
+                   
             loadDataFromServer(userId);
             if (shareUrlInput.value) {
                 shareUrlInput.value = location.origin + shareUrlInput.value;
@@ -1069,23 +1196,11 @@
                         const urlInput = document.getElementById('pageUrl');
                         urlInput.value = location.href;
 
-                        // コピー
-                        document.getElementById('copyUrlBtn').addEventListener('click', async () => {
-                            await navigator.clipboard.writeText(location.href);
-                            const msg = document.getElementById('copyMessage');
-                            msg.style.display = "block";
-                            setTimeout(() => {
-                                msg.style.display = "none";
-                            }, 2000);
-                        });
-
                     });
 
                     // ===== シェア用URL =====
                     const createShareBtn = document.getElementById('createShareUrlBtn');
                     const shareUrlInput = document.getElementById('shareUrl');
-                    const copyShareBtn = document.getElementById('copyShareUrlBtn');
-                    const shareMessage = document.getElementById('shareMessage');
                     const delShareBtn = document.getElementById('deleteShareUrlBtn');
 
                     createShareBtn.addEventListener('click', async () => {
@@ -1102,7 +1217,6 @@
 
                         const url = `${location.origin}/s/${shareId}`;
                         shareUrlInput.value = url;
-                        copyShareBtn.disabled = false;
                         createShareBtn.disabled = true;
                         delShareBtn.disabled = false;
                         createShareBtn.textContent = 'シェア用URL発行';
@@ -1116,20 +1230,11 @@
                                         body: `shareId=@Model.ShareId`
                                     });
                                      shareUrlInput.value = "";
-                                copyShareBtn.disabled = true;
                                 createShareBtn.disabled = false;
                                         delShareBtn.disabled = true;
                                 document.getElementById('share-x').removeAttribute('href');
                                 document.getElementById('share-fb').removeAttribute('href')
                                 document.getElementById('share-line').removeAttribute('href')
-                    });
-
-                    copyShareBtn.addEventListener('click', async () => {
-                        await navigator.clipboard.writeText(shareUrlInput.value);
-                        shareMessage.style.display = 'block';
-                        setTimeout(() => {
-                            shareMessage.style.display = 'none';
-                        }, 2000)
                     });
 
                 new Sortable(document.getElementById('region-sortable'), {
