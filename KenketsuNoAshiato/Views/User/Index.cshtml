@@ -363,15 +363,28 @@
 
         .overall-right {
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap; /* 狭いときだけ折り返す */
             gap: 6px;
+            align-items: center;
+            justify-content: flex-start; /* 左寄せ */
         }
 
         .control-row {
             display: flex;
             gap: 6px;
-            flex-wrap: wrap;
-            justify-content: center;
+            flex-wrap: nowrap; /* 通常は1行 */
+            justify-content: flex-start; /* 左寄せ */
+        }
+
+        @@media (max-width: 600px) {
+            .overall-right {
+                flex-direction: column; /* 縦並び＝2行 */
+                align-items: flex-start;
+            }
+
+            .control-row {
+                flex-wrap: wrap;
+            }
         }
 
         .bookmark-guide {
@@ -673,14 +686,16 @@
     </div>
     @if(!Model.IsShare)
     {
-        <div class="bookmark-guide">
-            <div class="bookmark-title">
-                📌 このページのURLをブックマークしてご使用ください
+        <div class="bookmark-guide share-accordion">
+            <div class="accordion-header">
+                <span>📌 このページのURLをブックマークしてご使用ください</span>
             </div>
 
-            <div class="share-url-wrapper">
-                <div class="bookmark-actions">
-                    <input type="text" id="pageUrl" class="share-url" readonly>
+            <div class="accordion-content">
+                <div class="share-url-wrapper">
+                    <div class="bookmark-actions">
+                        <input type="text" id="pageUrl" class="share-url" readonly>
+                    </div>
                 </div>
             </div>
         </div>
