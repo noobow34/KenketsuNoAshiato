@@ -511,22 +511,22 @@
 
         @@media (max-width: 600px) {
             .bookmark-actions {
-                flex-direction: column;
+                flex-wrap: wrap;
                 align-items: stretch;
             }
-
-                .bookmark-actions input {
-                    width: 100%;
+                /* ▼ 入力欄とアイコンは全幅 */
+                .bookmark-actions .share-url-wrapper,
+                .bookmark-actions .share-icons {
+                    flex: 0 0 100%;
                 }
-
+                /* ▼ ボタン2つは横並びで1段 */
                 .bookmark-actions button {
-                    width: 100%;
+                    flex: 1 1 0;
+                    width: auto; /* ← 100%を解除 */
+                    padding: 6px 4px;
+                    font-size: 0.8em;
+                    white-space: nowrap;
                 }
-
-            .share-icons {
-                justify-content: center;
-                margin-top: 6px;
-            }
         }
 
         .drag-handle {
