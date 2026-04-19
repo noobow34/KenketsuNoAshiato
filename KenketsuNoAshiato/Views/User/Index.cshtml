@@ -242,6 +242,34 @@
             filter: grayscale(30%);
         }
 
+        /* 閉鎖済みルーム */
+        .room-card.closed {
+            border: 1px solid #ccc;
+            opacity: 0.55;
+        }
+
+        .room-card.closed .room-image {
+            filter: grayscale(100%);
+        }
+
+        .closed-badge {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            background: rgba(80, 80, 80, 0.75);
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* 閉鎖済み非表示モード */
+        .hide-closed .room-card.closed {
+            display: none;
+        }
+
         /* スタンプ */
         .stamp-mark {
             position: absolute;
@@ -659,7 +687,7 @@
 
     </style>
 </head>
-<body class="@(Model.IsShare ? "share-view" : "")"
+<body class="@(Model.IsShare ? "share-view" : "") hide-closed"
       data-user-id="@Model.User.UserId">
 
     <h1>
@@ -791,6 +819,7 @@
                 <button id="openAllAccordion" class="reset-btn">📂 すべて開く</button>
                 <button id="closeAllAccordion" class="reset-btn">📁 すべて閉じる</button>
                 <button id="closeAllPref" class="reset-btn">📁 都道府県閉じ</button>
+                <button id="toggleClosed" class="reset-btn">🚫 閉鎖済み表示</button>
             </div>
         </div>
         @foreach (var cb in Model.CenterBlocks.OrderBy(cb => cb.DisplayOrder))
@@ -838,7 +867,11 @@
                                 <div class="room-list">
                                     @foreach (var r in Model.Rooms.Where(r => r.PrefId == p.PrefId).OrderBy(r => r.DisplayOrder))
                                     {
-                                        <div class="room-card" data-id="@r.RoomId">
+                                        <div class="room-card @(r.IsClosed ? "closed" : "")" data-id="@r.RoomId" data-closed="@(r.IsClosed ? "1" : "0")">
+                                            @if (r.IsClosed)
+                                            {
+                                                <span class="closed-badge">閉鎖済み</span>
+                                            }
                                             <img src="@r.ImagePath" alt="@r.RoomName" class="room-image">
                                             <div class="room-name">@r.RoomName</div>
                                         </div>
@@ -974,15 +1007,31 @@
             document.getElementById('closeAllPref')
                 .addEventListener('click', closeAllPref);
 
+            // 閉鎖済みトグル
+            const toggleClosedBtn = document.getElementById('toggleClosed');
+            let hideClosed = true;
+            toggleClosedBtn.addEventListener('click', () => {
+                hideClosed = !hideClosed;
+                document.body.classList.toggle('hide-closed', hideClosed);
+                toggleClosedBtn.textContent = hideClosed ? '🚫 閉鎖済み表示' : '🚫 閉鎖済み非表示';
+                updateRegionProgress();
+                updatePrefProgress();
+                updateOverallProgress();
+            });
+
             // ブロック進捗
             const updateRegionProgress = () => {
+                const hideClosed = document.body.classList.contains('hide-closed');
                 document.querySelectorAll('.accordion-header[data-region]').forEach(header => {
                     const region = header.dataset.region;
                     const cards = header.nextElementSibling.querySelectorAll('.room-card');
 
-                    const total = cards.length;
-                    let visited = 0;
-                    cards.forEach(c => { if (visitedData[c.dataset.id]) visited++; });
+                    let total = 0, visited = 0;
+                    cards.forEach(c => {
+                        if (hideClosed && c.dataset.closed === '1') return;
+                        total++;
+                        if (visitedData[c.dataset.id]) visited++;
+                    });
 
                     const percent = total === 0 ? 0 : Math.floor(visited / total * 100);
 
@@ -995,13 +1044,17 @@
 
             // 都道府県進捗
             const updatePrefProgress = () => {
+                const hideClosed = document.body.classList.contains('hide-closed');
                 document.querySelectorAll('.pref-header[data-pref]').forEach(header => {
                     const pref = header.dataset.pref;
                     const cards = header.nextElementSibling.querySelectorAll('.room-card');
 
-                    const total = cards.length;
-                    let visited = 0;
-                    cards.forEach(c => { if (visitedData[c.dataset.id]) visited++; });
+                    let total = 0, visited = 0;
+                    cards.forEach(c => {
+                        if (hideClosed && c.dataset.closed === '1') return;
+                        total++;
+                        if (visitedData[c.dataset.id]) visited++;
+                    });
 
                     const percent = total === 0 ? 0 : Math.floor(visited / total * 100);
 
@@ -1012,10 +1065,12 @@
 
             // 全国進捗
             const updateOverallProgress = () => {
-                const total = cards.length;
-                let visited = 0;
+                const hideClosed = document.body.classList.contains('hide-closed');
+                let total = 0, visited = 0;
 
                 cards.forEach(c => {
+                    if (hideClosed && c.dataset.closed === '1') return;
+                    total++;
                     if (visitedData[c.dataset.id]) visited++;
                 });
 

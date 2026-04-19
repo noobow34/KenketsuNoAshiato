@@ -26,4 +26,7 @@ public partial class KenketsuRoom
     [Column("image_path")]
     [StringLength(100)]
     public string? ImagePath { get; set; }
+
+    [Column("is_closed")]
+    public bool IsClosed { get; set; } = false;
 }
