@@ -29,4 +29,8 @@ public partial class KenketsuRoom
 
     [Column("is_closed")]
     public bool IsClosed { get; set; } = false;
+
+    [Column("remark")]
+    [StringLength(200)]
+    public string? Remark { get; set; }
 }

@@ -27,624 +27,632 @@
         }
     </title>
     <style>
-        body {
-            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-            color: #333;
-            user-select: none;
-        }
+            body {
+                font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+                max-width: 1000px;
+                margin: 0 auto;
+                padding: 20px;
+                color: #333;
+                user-select: none;
+            }
 
-        h1 {
-            text-align: center;
-            margin-bottom: 40px;
-        }
+            h1 {
+                text-align: center;
+                margin-bottom: 40px;
+            }
 
-        .status-bar {
-            text-align: center;
-            margin-bottom: 30px;
-            font-weight: bold;
-            background: #ffebeb;
-            padding: 10px;
-            border-radius: 8px;
-            color: #d32f2f;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
+            .status-bar {
+                text-align: center;
+                margin-bottom: 30px;
+                font-weight: bold;
+                background: #ffebeb;
+                padding: 10px;
+                border-radius: 8px;
+                color: #d32f2f;
+                display: flex;
+                justify-content: center;
+                gap: 20px;
+            }
 
-        .reset-btn {
-            background: #fff;
-            border: 1px solid #d32f2f;
-            color: #d32f2f;
-            border-radius: 4px;
-            cursor: pointer;
-            padding: 2px 10px;
-            font-size: 0.8em;
-        }
+            .reset-btn {
+                background: #fff;
+                border: 1px solid #d32f2f;
+                color: #d32f2f;
+                border-radius: 4px;
+                cursor: pointer;
+                padding: 2px 10px;
+                font-size: 0.8em;
+            }
 
-        .region-section {
-            margin-bottom: 60px;
-        }
+            .region-section {
+                margin-bottom: 60px;
+            }
 
-        .region-title {
-            border-bottom: 2px solid #ff0000;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-        }
+            .region-title {
+                border-bottom: 2px solid #ff0000;
+                padding-bottom: 10px;
+                margin-bottom: 20px;
+                font-size: 1.5em;
+            }
 
-        /* ===== 地区アコーディオン ===== */
-        .accordion-header {
-            cursor: pointer;
-            padding: 14px 16px;
-            background: #ffecec;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: bold;
-        }
+            /* ===== 地区アコーディオン ===== */
+            .accordion-header {
+                cursor: pointer;
+                padding: 14px 16px;
+                background: #ffecec;
+                border-radius: 10px;
+                margin-bottom: 10px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-weight: bold;
+            }
 
-        .accordion-header::after {
-            content: "▼";
-            margin-left: 10px;
-            transition: transform 0.2s;
-        }
+                .accordion-header::after {
+                    content: "▼";
+                    margin-left: 10px;
+                    transition: transform 0.2s;
+                }
 
-        .accordion-header.open::after {
-            transform: rotate(-180deg);
-        }
+                .accordion-header.open::after {
+                    transform: rotate(-180deg);
+                }
 
-        .accordion-content {
-            display: none;
-            margin-bottom: 40px;
-        }
+            .accordion-content {
+                display: none;
+                margin-bottom: 40px;
+            }
 
-            .accordion-content.open {
+                .accordion-content.open {
+                    display: block;
+                }
+
+            /* 地区進捗 */
+            .region-center {
+                text-align: center;
+                min-width: 170px;
+            }
+
+            .region-text {
+                font-size: 0.85em;
+                color: #444;
+            }
+
+            .region-bar {
+                height: 6px;
+                background: #ddd;
+                border-radius: 4px;
+                overflow: hidden;
+                margin-top: 4px;
+            }
+
+            .region-bar-fill {
+                height: 100%;
+                width: 0%;
+                background: #d32f2f;
+                transition: width 0.3s;
+            }
+
+            /* ===== 都道府県 ===== */
+            .pref-header {
+                cursor: pointer;
+                padding: 10px 12px;
+                margin: 18px 0 8px;
+                background: #fafafa;
+                border-left: 4px solid #d32f2f;
+                border-radius: 6px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-weight: bold;
+            }
+
+            .pref-left {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .pref-arrow {
+                font-size: 0.8em;
+                transition: transform 0.2s;
+            }
+
+            .pref-header.open .pref-arrow {
+                transform: rotate(-180deg);
+            }
+
+            /* 県進捗（省スペース） */
+            .pref-right {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 0.8em;
+                color: #444;
+            }
+
+            .pref-bar {
+                width: 60px;
+                height: 5px;
+                background: #ddd;
+                border-radius: 3px;
+                overflow: hidden;
+            }
+
+            .pref-bar-fill {
+                height: 100%;
+                width: 0%;
+                background: #d32f2f;
+                transition: width 0.3s;
+            }
+
+            .pref-content {
+                display: none;
+            }
+
+                .pref-content.open {
+                    display: block;
+                }
+
+            .room-list {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 20px;
+            }
+
+            .room-card {
+                border: 1px solid #eee;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                text-align: center;
+                padding-bottom: 10px;
+                cursor: pointer;
+                position: relative;
+                transition: transform 0.1s;
+            }
+
+                .room-card:active {
+                    transform: scale(0.98);
+                }
+
+                .room-card:focus {
+                    outline: 2px dashed #d32f2f;
+                }
+
+            .room-image {
+                width: 100%;
+                height: 150px;
+                object-fit: cover;
+                background-color: #f0f0f0;
                 display: block;
+                transition: opacity 0.3s;
             }
 
-        /* 地区進捗 */
-        .region-center {
-            text-align: center;
-            min-width: 170px;
-        }
-
-        .region-text {
-            font-size: 0.85em;
-            color: #444;
-        }
-
-        .region-bar {
-            height: 6px;
-            background: #ddd;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 4px;
-        }
-
-        .region-bar-fill {
-            height: 100%;
-            width: 0%;
-            background: #d32f2f;
-            transition: width 0.3s;
-        }
-
-        /* ===== 都道府県 ===== */
-        .pref-header {
-            cursor: pointer;
-            padding: 10px 12px;
-            margin: 18px 0 8px;
-            background: #fafafa;
-            border-left: 4px solid #d32f2f;
-            border-radius: 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: bold;
-        }
-
-        .pref-left {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .pref-arrow {
-            font-size: 0.8em;
-            transition: transform 0.2s;
-        }
-
-        .pref-header.open .pref-arrow {
-            transform: rotate(-180deg);
-        }
-
-        /* 県進捗（省スペース） */
-        .pref-right {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.8em;
-            color: #444;
-        }
-
-        .pref-bar {
-            width: 60px;
-            height: 5px;
-            background: #ddd;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .pref-bar-fill {
-            height: 100%;
-            width: 0%;
-            background: #d32f2f;
-            transition: width 0.3s;
-        }
-
-        .pref-content {
-            display: none;
-        }
-
-        .pref-content.open {
-            display: block;
-        }
-
-        .room-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
-        .room-card {
-            border: 1px solid #eee;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            text-align: center;
-            padding-bottom: 10px;
-            cursor: pointer;
-            position: relative;
-            transition: transform 0.1s;
-        }
-
-            .room-card:active {
-            transform: scale(0.98);
-        }
-
-        .room-card:focus {
-            outline: 2px dashed #d32f2f;
-        }
-
-        .room-image {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            background-color: #f0f0f0;
-            display: block;
-            transition: opacity 0.3s;
-        }
-
-        .room-name {
-            margin-top: 10px;
-            font-weight: bold;
-            font-size: 0.95em;
-            padding: 0 10px;
-        }
-
-        /* 訪問済みスタイル */
-        .room-card.visited .room-image {
-            opacity: 0.5;
-            filter: grayscale(30%);
-        }
-
-        /* 閉鎖済みルーム */
-        .room-card.closed {
-            border: 1px solid #ccc;
-            opacity: 0.55;
-        }
-
-        .room-card.closed .room-image {
-            filter: grayscale(100%);
-        }
-
-        .closed-badge {
-            position: absolute;
-            top: 6px;
-            left: 6px;
-            background: rgba(80, 80, 80, 0.75);
-            color: #fff;
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            pointer-events: none;
-            z-index: 5;
-        }
-
-        /* 閉鎖済み非表示モード */
-        .hide-closed .room-card.closed {
-            display: none;
-        }
-
-        /* スタンプ */
-        .stamp-mark {
-            position: absolute;
-            inset: 0; /* Flex中央配置のため */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        .animate-stamp .stamp-inner {
-            animation: stamp-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .stamp-inner {
-            width: 90px;
-            height: 90px;
-            border: 3px double #d32f2f;
-            border-radius: 50%;
-            background-color: rgba(255,255,255,0.9);
-            color: #d32f2f;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-            /* ここで回転はJSでランダムに追加 */
-        }
-
-        .stamp-title {
-            font-size: 28px;
-            font-weight: bold;
-            line-height: 1;
-            margin-top: 5px;
-        }
-
-        .stamp-date-line {
-            width: 70%;
-            height: 1px;
-            background-color: #d32f2f;
-            margin: 4px 0;
-        }
-
-        .stamp-date {
-            font-size: 13px;
-            font-weight: bold;
-            font-family: monospace;
-        }
-
-        @@keyframes stamp-pop {
-            0% {
-                transform: scale(0);
-                opacity: 0;
+            .room-name {
+                margin-top: 10px;
+                font-weight: bold;
+                font-size: 0.95em;
+                padding: 0 10px;
             }
 
-            100% {
-                transform: scale(1);
-                opacity: 1;
+            .room-remark {
+                margin-top: 4px;
+                font-size: 0.75em;
+                color: #888;
+                padding: 0 10px;
+                line-height: 1.4;
             }
-        }
 
-        /* モーダル日付入力 */
-        #dateModal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background-color: rgba(0,0,0,0.4);
-            justify-content: center;
-            align-items: center;
-            z-index: 50;
-        }
+            /* 訪問済みスタイル */
+            .room-card.visited .room-image {
+                opacity: 0.5;
+                filter: grayscale(30%);
+            }
 
-        #dateModalContent {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-        }
+            /* 閉鎖済みルーム */
+            .room-card.closed {
+                border: 1px solid #ccc;
+                opacity: 0.55;
+            }
 
-        #dateModal input[type="date"] {
-            font-size: 1em;
-            padding: 5px;
-        }
+                .room-card.closed .room-image {
+                    filter: grayscale(100%);
+                }
 
-        #dateModal button {
-            margin: 10px 5px 0 5px;
-            padding: 5px 10px;
-            border-radius: 4px;
-            border: 1px solid #d32f2f;
-            background: #fff;
-            color: #d32f2f;
-            cursor: pointer;
-        }
+            .closed-badge {
+                position: absolute;
+                top: 6px;
+                left: 6px;
+                background: rgba(80, 80, 80, 0.75);
+                color: #fff;
+                font-size: 10px;
+                padding: 2px 6px;
+                border-radius: 4px;
+                pointer-events: none;
+                z-index: 5;
+            }
 
-        .status-bar.overall {
-            background: #fff5f5;
-            border: 2px solid #d32f2f;
-            align-items: center;
-        }
+            /* 閉鎖済み非表示モード */
+            .hide-closed .room-card.closed {
+                display: none;
+            }
 
-        .overall-title {
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #d32f2f;
-        }
+            /* スタンプ */
+            .stamp-mark {
+                position: absolute;
+                inset: 0; /* Flex中央配置のため */
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                pointer-events: none;
+                z-index: 10;
+            }
 
-        .overall-left,
-        .overall-center,
-        .overall-right {
-            display: flex;
-            align-items: center;
-        }
+            .animate-stamp .stamp-inner {
+                animation: stamp-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            }
 
-        .overall-center {
-            flex-direction: column;
-            min-width: 200px;
-        }
+            .stamp-inner {
+                width: 90px;
+                height: 90px;
+                border: 3px double #d32f2f;
+                border-radius: 50%;
+                background-color: rgba(255,255,255,0.9);
+                color: #d32f2f;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+                /* ここで回転はJSでランダムに追加 */
+            }
 
-        .overall-center .region-bar {
-            width: 180px;
-        }
+            .stamp-title {
+                font-size: 28px;
+                font-weight: bold;
+                line-height: 1;
+                margin-top: 5px;
+            }
 
-        .overall-right {
-            display: flex;
-            flex-wrap: wrap; /* 狭いときだけ折り返す */
-            gap: 6px;
-            align-items: center;
-            justify-content: flex-start; /* 左寄せ */
-        }
+            .stamp-date-line {
+                width: 70%;
+                height: 1px;
+                background-color: #d32f2f;
+                margin: 4px 0;
+            }
 
-        .control-row {
-            display: flex;
-            gap: 6px;
-            flex-wrap: nowrap; /* 通常は1行 */
-            justify-content: flex-start; /* 左寄せ */
-        }
+            .stamp-date {
+                font-size: 13px;
+                font-weight: bold;
+                font-family: monospace;
+            }
 
-        @@media (max-width: 600px) {
+            @@keyframes stamp-pop {
+                0% {
+                    transform: scale(0);
+                    opacity: 0;
+                }
+
+                100% {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+            }
+
+            /* モーダル日付入力 */
+            #dateModal {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background-color: rgba(0,0,0,0.4);
+                justify-content: center;
+                align-items: center;
+                z-index: 50;
+            }
+
+            #dateModalContent {
+                background: #fff;
+                padding: 20px;
+                border-radius: 8px;
+                text-align: center;
+            }
+
+            #dateModal input[type="date"] {
+                font-size: 1em;
+                padding: 5px;
+            }
+
+            #dateModal button {
+                margin: 10px 5px 0 5px;
+                padding: 5px 10px;
+                border-radius: 4px;
+                border: 1px solid #d32f2f;
+                background: #fff;
+                color: #d32f2f;
+                cursor: pointer;
+            }
+
+            .status-bar.overall {
+                background: #fff5f5;
+                border: 2px solid #d32f2f;
+                align-items: center;
+            }
+
+            .overall-title {
+                font-size: 1.1em;
+                font-weight: bold;
+                color: #d32f2f;
+            }
+
+            .overall-left,
+            .overall-center,
             .overall-right {
-                flex-direction: column; /* 縦並び＝2行 */
-                align-items: flex-start;
+                display: flex;
+                align-items: center;
+            }
+
+            .overall-center {
+                flex-direction: column;
+                min-width: 200px;
+            }
+
+                .overall-center .region-bar {
+                    width: 180px;
+                }
+
+            .overall-right {
+                display: flex;
+                flex-wrap: wrap; /* 狭いときだけ折り返す */
+                gap: 6px;
+                align-items: center;
+                justify-content: flex-start; /* 左寄せ */
             }
 
             .control-row {
-                flex-wrap: wrap;
-            }
-        }
-
-        .bookmark-guide {
-            background: #fff5f5;
-            border: 2px dashed #d32f2f;
-            border-radius: 10px;
-            padding: 14px 16px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .bookmark-title {
-            font-size: 0.9em;
-            font-weight: bold;
-            color: #d32f2f;
-            margin-bottom: 10px;
-        }
-
-        .bookmark-actions {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .bookmark-actions input {
-            width: 320px;
-            padding: 6px 8px;
-            font-size: 0.85em;
-            border: 1px solid #d32f2f;
-            border-radius: 6px;
-            background: #fff;
-            color: #333;
-        }
-
-        .bookmark-actions input:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.15);
-        }
-
-        .bookmark-actions button {
-            padding: 6px 12px;
-            font-size: 0.85em;
-            border-radius: 6px;
-            border: 1px solid #d32f2f;
-            background: #fff;
-            color: #d32f2f;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-
-        .bookmark-actions button:hover {
-            background: #ffecec;
-        }
-
-        .bookmark-actions button:active {
-            transform: scale(0.97);
-        }
-
-        .bookmark-message {
-            display: none;
-            margin-top: 6px;
-            font-size: 0.8em;
-            color: #2e7d32;
-        }
-
-        .bookmark-actions button:disabled {
-            color: #aaa;
-            border-color: #ddd;
-            background: #f5f5f5;
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
-        .bookmark-actions button:disabled:hover {
-            background: #f5f5f5;
-        }
-
-        .bookmark-actions button:disabled:active {
-            transform: none;
-        }
-
-        .bookmark-actions input:disabled,
-        .bookmark-actions input[readonly]:placeholder-shown {
-            color: #999;
-            background: #fafafa;
-        }
-
-        /* ===== シェア用（閲覧専用） ===== */
-        .share-view .room-card {
-            cursor: default;
-        }
-
-            .share-view .room-card:active {
-                transform: none;
+                display: flex;
+                gap: 6px;
+                flex-wrap: nowrap; /* 通常は1行 */
+                justify-content: flex-start; /* 左寄せ */
             }
 
-            .share-view .room-card:focus {
-                outline: none;
-            }
-
-        .share-icons {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-            .share-icons img {
-                width: 28px;
-                height: 28px;
-                cursor: pointer;
-                transition: transform 0.15s, opacity 0.15s;
-            }
-
-            .share-icons a:hover img {
-                transform: scale(1.1);
-                opacity: 0.85;
-            }
-
-            .share-icons a:active img {
-                transform: scale(0.95);
-            }
-
-        @@media (max-width: 600px) {
-            .bookmark-actions {
-                flex-wrap: wrap;
-                align-items: stretch;
-            }
-                /* ▼ 入力欄とアイコンは全幅 */
-                .bookmark-actions .share-url-wrapper,
-                .bookmark-actions .share-icons {
-                    flex: 0 0 100%;
+            @@media (max-width: 600px) {
+                .overall-right {
+                    flex-direction: column; /* 縦並び＝2行 */
+                    align-items: flex-start;
                 }
-                /* ▼ ボタン2つは横並びで1段 */
+
+                .control-row {
+                    flex-wrap: wrap;
+                }
+            }
+
+            .bookmark-guide {
+                background: #fff5f5;
+                border: 2px dashed #d32f2f;
+                border-radius: 10px;
+                padding: 14px 16px;
+                margin-bottom: 30px;
+                text-align: center;
+            }
+
+            .bookmark-title {
+                font-size: 0.9em;
+                font-weight: bold;
+                color: #d32f2f;
+                margin-bottom: 10px;
+            }
+
+            .bookmark-actions {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-items: center;
+                gap: 8px;
+            }
+
+                .bookmark-actions input {
+                    width: 320px;
+                    padding: 6px 8px;
+                    font-size: 0.85em;
+                    border: 1px solid #d32f2f;
+                    border-radius: 6px;
+                    background: #fff;
+                    color: #333;
+                }
+
+                    .bookmark-actions input:focus {
+                        outline: none;
+                        box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.15);
+                    }
+
                 .bookmark-actions button {
-                    flex: 1 1 0;
-                    width: auto; /* ← 100%を解除 */
-                    padding: 6px 4px;
-                    font-size: 0.8em;
+                    padding: 6px 12px;
+                    font-size: 0.85em;
+                    border-radius: 6px;
+                    border: 1px solid #d32f2f;
+                    background: #fff;
+                    color: #d32f2f;
+                    cursor: pointer;
                     white-space: nowrap;
                 }
-        }
 
-        .drag-handle {
-            cursor: grab;
-            margin-right: 8px;
-            font-size: 1.2em;
-            color: #999;
-        }
+                    .bookmark-actions button:hover {
+                        background: #ffecec;
+                    }
 
-            .drag-handle:active {
-                cursor: grabbing;
-            }
+                    .bookmark-actions button:active {
+                        transform: scale(0.97);
+                    }
 
-        .accordion-header:hover,
-        .pref-header:hover {
-            background: #ffdede;
-            cursor: grab;
-        }
-
-        .accordion-left {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* ===== 並び替えモード ===== */
-        .sort-mode .accordion-header {
-            background: #fff3f3;
-            cursor: grab;
-        }
-
-        .sort-mode .pref-header {
-            cursor: grab;
-        }
-
-        .sort-mode .accordion-header::after,
-        .sort-mode .pref-arrow {
-            opacity: 0.3; /* 開閉UIを弱める */
-        }
-
-        .sort-mode .drag-handle {
-            display: inline;
-            color: #d32f2f;
-        }
-
-        .drag-handle {
-            display: none; /* 通常時は非表示 */
-        }
-
-        /* ===== シェア用アコーディオン（控えめ版） ===== */
-        .share-accordion {
-            background: transparent;
-            border: none;
-            padding: 0;
-            margin-bottom: 20px;
-        }
-
-            /* ヘッダを細く */
-            .share-accordion .accordion-header {
-                background: #fafafa;
-                border: 1px dashed #ddd;
-                border-radius: 6px;
-                padding: 6px 10px;
+            .bookmark-message {
+                display: none;
+                margin-top: 6px;
                 font-size: 0.8em;
-                font-weight: normal;
-                color: #666;
-                margin-bottom: 0;
+                color: #2e7d32;
             }
 
-                /* ▼アイコンも控えめに */
-                .share-accordion .accordion-header::after {
-                    font-size: 0.7em;
-                    color: #999;
-                }
-
-                /* 開いたときだけ少し主張 */
-                .share-accordion .accordion-header.open {
-                    background: #fff5f5;
-                    border-color: #d32f2f;
-                    color: #d32f2f;
-                }
-
-            /* 中身 */
-            .share-accordion .accordion-content {
-                margin-top: 8px;
+            .bookmark-actions button:disabled {
+                color: #aaa;
+                border-color: #ddd;
+                background: #f5f5f5;
+                cursor: not-allowed;
+                opacity: 0.6;
             }
+
+                .bookmark-actions button:disabled:hover {
+                    background: #f5f5f5;
+                }
+
+                .bookmark-actions button:disabled:active {
+                    transform: none;
+                }
+
+            .bookmark-actions input:disabled,
+            .bookmark-actions input[readonly]:placeholder-shown {
+                color: #999;
+                background: #fafafa;
+            }
+
+            /* ===== シェア用（閲覧専用） ===== */
+            .share-view .room-card {
+                cursor: default;
+            }
+
+                .share-view .room-card:active {
+                    transform: none;
+                }
+
+                .share-view .room-card:focus {
+                    outline: none;
+                }
+
+            .share-icons {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+            }
+
+                .share-icons img {
+                    width: 28px;
+                    height: 28px;
+                    cursor: pointer;
+                    transition: transform 0.15s, opacity 0.15s;
+                }
+
+                .share-icons a:hover img {
+                    transform: scale(1.1);
+                    opacity: 0.85;
+                }
+
+                .share-icons a:active img {
+                    transform: scale(0.95);
+                }
+
+            @@media (max-width: 600px) {
+                .bookmark-actions {
+                    flex-wrap: wrap;
+                    align-items: stretch;
+                }
+                    /* ▼ 入力欄とアイコンは全幅 */
+                    .bookmark-actions .share-url-wrapper,
+                    .bookmark-actions .share-icons {
+                        flex: 0 0 100%;
+                    }
+                    /* ▼ ボタン2つは横並びで1段 */
+                    .bookmark-actions button {
+                        flex: 1 1 0;
+                        width: auto; /* ← 100%を解除 */
+                        padding: 6px 4px;
+                        font-size: 0.8em;
+                        white-space: nowrap;
+                    }
+            }
+
+            .drag-handle {
+                cursor: grab;
+                margin-right: 8px;
+                font-size: 1.2em;
+                color: #999;
+            }
+
+                .drag-handle:active {
+                    cursor: grabbing;
+                }
+
+            .accordion-header:hover,
+            .pref-header:hover {
+                background: #ffdede;
+                cursor: grab;
+            }
+
+            .accordion-left {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            /* ===== 並び替えモード ===== */
+            .sort-mode .accordion-header {
+                background: #fff3f3;
+                cursor: grab;
+            }
+
+            .sort-mode .pref-header {
+                cursor: grab;
+            }
+
+            .sort-mode .accordion-header::after,
+            .sort-mode .pref-arrow {
+                opacity: 0.3; /* 開閉UIを弱める */
+            }
+
+            .sort-mode .drag-handle {
+                display: inline;
+                color: #d32f2f;
+            }
+
+            .drag-handle {
+                display: none; /* 通常時は非表示 */
+            }
+
+            /* ===== シェア用アコーディオン（控えめ版） ===== */
+            .share-accordion {
+                background: transparent;
+                border: none;
+                padding: 0;
+                margin-bottom: 20px;
+            }
+
+                /* ヘッダを細く */
+                .share-accordion .accordion-header {
+                    background: #fafafa;
+                    border: 1px dashed #ddd;
+                    border-radius: 6px;
+                    padding: 6px 10px;
+                    font-size: 0.8em;
+                    font-weight: normal;
+                    color: #666;
+                    margin-bottom: 0;
+                }
+
+                    /* ▼アイコンも控えめに */
+                    .share-accordion .accordion-header::after {
+                        font-size: 0.7em;
+                        color: #999;
+                    }
+
+                    /* 開いたときだけ少し主張 */
+                    .share-accordion .accordion-header.open {
+                        background: #fff5f5;
+                        border-color: #d32f2f;
+                        color: #d32f2f;
+                    }
+
+                /* 中身 */
+                .share-accordion .accordion-content {
+                    margin-top: 8px;
+                }
 
             .share-url {
                 width: 100%;
@@ -656,34 +664,34 @@
                 cursor: pointer;
             }
 
-            /* コピー完了時 */
-            .share-url.copied {
-                background: #e8f8f0;
-                border-color: #2ecc71;
+                /* コピー完了時 */
+                .share-url.copied {
+                    background: #e8f8f0;
+                    border-color: #2ecc71;
+                }
+
+            .share-url-wrapper {
+                position: relative;
+                padding: 10px;
             }
 
-        .share-url-wrapper {
-            position: relative;
-            padding: 10px;
-        }
-
-        .copy-toast {
-            position: absolute;
-            top: -8px;
-            right: 6px;
-            font-size: 11px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            background: #2ecc71;
-            color: #fff;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease;
-        }
-
-            .copy-toast.show {
-                opacity: 1;
+            .copy-toast {
+                position: absolute;
+                top: -8px;
+                right: 6px;
+                font-size: 11px;
+                padding: 2px 6px;
+                border-radius: 4px;
+                background: #2ecc71;
+                color: #fff;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.2s ease;
             }
+
+                .copy-toast.show {
+                    opacity: 1;
+                }
 
     </style>
 </head>
@@ -716,7 +724,7 @@
             </div>
         }
     </div>
-    @if(!Model.IsShare)
+    @if (!Model.IsShare)
     {
         <div class="bookmark-guide share-accordion">
             <div class="accordion-header">
@@ -750,16 +758,16 @@
                         シェア用URL発行
                     </button>
                     <button id="deleteShareUrlBtn"
-                            @(string.IsNullOrEmpty(Model.ShareId) ? "disabled" : "")>
+                        @(string.IsNullOrEmpty(Model.ShareId) ? "disabled" : "")>
                         削除
                     </button>
                     <div class="share-url-wrapper">
-                    <input type="text"
-                           id="shareUrl"
-                           class="share-url"
-                           readonly
-                           value="@(!string.IsNullOrEmpty(Model.ShareId) ? $"/s/{Model.ShareId}" : "")"
-                           placeholder="URLを発行してください">
+                        <input type="text"
+                               id="shareUrl"
+                               class="share-url"
+                               readonly
+                               value="@(!string.IsNullOrEmpty(Model.ShareId) ? $"/s/{Model.ShareId}" : "")"
+                               placeholder="URLを発行してください">
                     </div>
                     <div class="share-icons">
                         <a id="share-x" target="_blank" title="Xでシェア">
@@ -785,11 +793,11 @@
 
             <div class="bookmark-actions">
                 <div class="share-url-wrapper">
-                <input type="text"
-                       id="shareUrl"
-                       class="share-url"
-                       readonly
-                       value="@(!string.IsNullOrEmpty(Model.ShareId) ? $"/s/{Model.ShareId}" : "")">
+                    <input type="text"
+                           id="shareUrl"
+                           class="share-url"
+                           readonly
+                           value="@(!string.IsNullOrEmpty(Model.ShareId) ? $"/s/{Model.ShareId}" : "")">
                 </div>
                 <div class="share-icons">
                     <a id="share-x" target="_blank" title="Xでシェア">
@@ -824,7 +832,7 @@
         </div>
         @foreach (var cb in Model.CenterBlocks.OrderBy(cb => cb.DisplayOrder))
         {
-                <div class="accordion-region" data-center-id="@cb.CenterBlockId">
+            <div class="accordion-region" data-center-id="@cb.CenterBlockId">
 
                 <div class="accordion-header open" data-region="@cb.CenterBlockId">
                     <div class="accordion-left">
@@ -839,7 +847,7 @@
                     </div>
                 </div>
 
-                    <div class="accordion-content open pref-sortable" data-center-id="@cb.CenterBlockId">
+                <div class="accordion-content open pref-sortable" data-center-id="@cb.CenterBlockId">
                     @{
                         var prefs = Model.Prefectures
                         .Where(p => p.CenterBlockId == cb.CenterBlockId)
@@ -874,6 +882,10 @@
                                             }
                                             <img src="@r.ImagePath" alt="@r.RoomName" class="room-image">
                                             <div class="room-name">@r.RoomName</div>
+                                            @if (!string.IsNullOrEmpty(r.Remark))
+                                            {
+                                                <div class="room-remark">@r.Remark</div>
+                                            }
                                         </div>
                                     }
                                 </div>
@@ -904,491 +916,491 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
     <script>
         const updateShareLinks = (url) => {
-            const encoded = encodeURIComponent(url);
-            document.getElementById('share-x').href =
-                `https://twitter.com/intent/tweet?url=${encoded}&text=献血のあしあと`;
-            document.getElementById('share-fb').href =
-                `https://www.facebook.com/sharer/sharer.php?u=${encoded}`;
-            document.getElementById('share-line').href =
-                `https://social-plugins.line.me/lineit/share?url=${encoded}`;
+        const encoded = encodeURIComponent(url);
+        document.getElementById('share-x').href =
+        `https://twitter.com/intent/tweet?url=${encoded}&text=献血のあしあと`;
+        document.getElementById('share-fb').href =
+        `https://www.facebook.com/sharer/sharer.php?u=${encoded}`;
+        document.getElementById('share-line').href =
+        `https://social-plugins.line.me/lineit/share?url=${encoded}`;
         };
         let sortMode = false;
         document.addEventListener('DOMContentLoaded', () => {
-            const cards = document.querySelectorAll('.room-card');
-            const resetBtn = document.getElementById('reset-all');
-            const userId = '@Model.User.UserId';
+        const cards = document.querySelectorAll('.room-card');
+        const resetBtn = document.getElementById('reset-all');
+        const userId = '@Model.User.UserId';
 
-            let visitedData = {};
-            let currentCard = null;
+        let visitedData = {};
+        let currentCard = null;
 
-            const shareUrlInput = document.getElementById("shareUrl");
+        const shareUrlInput = document.getElementById("shareUrl");
 
-            document.querySelectorAll('.share-url').forEach(input => {
-                input.addEventListener("click", async () => {
-                    await navigator.clipboard.writeText(input.value);
-                    showCopied(input);
-                    input.classList.add("copied");
-                    setTimeout(() => {
-                        input.classList.remove("copied");
-                    }, 1200);
-            });
+        document.querySelectorAll('.share-url').forEach(input => {
+        input.addEventListener("click", async () => {
+        await navigator.clipboard.writeText(input.value);
+        showCopied(input);
+        input.classList.add("copied");
+        setTimeout(() => {
+        input.classList.remove("copied");
+        }, 1200);
+        });
 
-            // PCでフォーカスされた時は全選択
-            input.addEventListener("focus", () => {
-                input.select();
-            });
+        // PCでフォーカスされた時は全選択
+        input.addEventListener("focus", () => {
+        input.select();
+        });
 
         });
 
 
         const showCopied = (input) => {
-            const wrapper = input.closest(".share-url-wrapper");
-            if (!wrapper) return;
+        const wrapper = input.closest(".share-url-wrapper");
+        if (!wrapper) return;
 
-            // 既存の表示があれば消す
-            wrapper.querySelectorAll(".copy-toast").forEach(e => e.remove());
+        // 既存の表示があれば消す
+        wrapper.querySelectorAll(".copy-toast").forEach(e => e.remove());
 
-            const toast = document.createElement("div");
-            toast.className = "copy-toast";
-            toast.textContent = "コピーしました";
+        const toast = document.createElement("div");
+        toast.className = "copy-toast";
+        toast.textContent = "コピーしました";
 
-            wrapper.appendChild(toast);
+        wrapper.appendChild(toast);
 
-            requestAnimationFrame(() => {
-                toast.classList.add("show");
-            });
+        requestAnimationFrame(() => {
+        toast.classList.add("show");
+        });
 
-            setTimeout(() => {
-                toast.classList.remove("show");
-                setTimeout(() => toast.remove(), 300);
-            }, 1200);
+        setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 300);
+        }, 1200);
         }
 
-             const openAllAccordion = () => {
-                    document.querySelectorAll(
-                      '.accordion-header:not(.share-accordion .accordion-header)'
-                    ).forEach(h => {
-                    h.classList.add('open');
-                    h.nextElementSibling?.classList.add('open');
-                });
+        const openAllAccordion = () => {
+        document.querySelectorAll(
+        '.accordion-header:not(.share-accordion .accordion-header)'
+        ).forEach(h => {
+        h.classList.add('open');
+        h.nextElementSibling?.classList.add('open');
+        });
 
-                document.querySelectorAll('.pref-header').forEach(h => {
-                    h.classList.add('open');
-                    h.nextElementSibling?.classList.add('open');
-                });
-            };
+        document.querySelectorAll('.pref-header').forEach(h => {
+        h.classList.add('open');
+        h.nextElementSibling?.classList.add('open');
+        });
+        };
 
-            const closeAllAccordion = () => {
-                   document.querySelectorAll(
-                      '.accordion-header:not(.share-accordion .accordion-header)'
-                    ).forEach(h => {
-                    h.classList.remove('open');
-                    h.nextElementSibling?.classList.remove('open');
-                });
-                document.querySelectorAll('.pref-header').forEach(h => {
-                    h.classList.remove('open');
-                    h.nextElementSibling?.classList.remove('open');
-                });
-            };
+        const closeAllAccordion = () => {
+        document.querySelectorAll(
+        '.accordion-header:not(.share-accordion .accordion-header)'
+        ).forEach(h => {
+        h.classList.remove('open');
+        h.nextElementSibling?.classList.remove('open');
+        });
+        document.querySelectorAll('.pref-header').forEach(h => {
+        h.classList.remove('open');
+        h.nextElementSibling?.classList.remove('open');
+        });
+        };
 
-            const closeAllPref = () => {
-                document.querySelectorAll('.pref-header').forEach(h => {
-                    h.classList.remove('open');
-                    h.nextElementSibling?.classList.remove('open');
-                });
-            };
+        const closeAllPref = () => {
+        document.querySelectorAll('.pref-header').forEach(h => {
+        h.classList.remove('open');
+        h.nextElementSibling?.classList.remove('open');
+        });
+        };
 
-            document.getElementById('openAllAccordion')
-                .addEventListener('click', openAllAccordion);
+        document.getElementById('openAllAccordion')
+        .addEventListener('click', openAllAccordion);
 
-            document.getElementById('closeAllAccordion')
-                .addEventListener('click', closeAllAccordion);
+        document.getElementById('closeAllAccordion')
+        .addEventListener('click', closeAllAccordion);
 
-            document.getElementById('closeAllPref')
-                .addEventListener('click', closeAllPref);
+        document.getElementById('closeAllPref')
+        .addEventListener('click', closeAllPref);
 
-            // 閉鎖済みトグル
-            const toggleClosedBtn = document.getElementById('toggleClosed');
-            let hideClosed = true;
-            toggleClosedBtn.addEventListener('click', () => {
-                hideClosed = !hideClosed;
-                document.body.classList.toggle('hide-closed', hideClosed);
-                toggleClosedBtn.textContent = hideClosed ? '🚫 閉鎖済み表示' : '🚫 閉鎖済み非表示';
-                updateRegionProgress();
-                updatePrefProgress();
-                updateOverallProgress();
-            });
+        // 閉鎖済みトグル
+        const toggleClosedBtn = document.getElementById('toggleClosed');
+        let hideClosed = true;
+        toggleClosedBtn.addEventListener('click', () => {
+        hideClosed = !hideClosed;
+        document.body.classList.toggle('hide-closed', hideClosed);
+        toggleClosedBtn.textContent = hideClosed ? '🚫 閉鎖済み表示' : '🚫 閉鎖済み非表示';
+        updateRegionProgress();
+        updatePrefProgress();
+        updateOverallProgress();
+        });
 
-            // ブロック進捗
-            const updateRegionProgress = () => {
-                const hideClosed = document.body.classList.contains('hide-closed');
-                document.querySelectorAll('.accordion-header[data-region]').forEach(header => {
-                    const region = header.dataset.region;
-                    const cards = header.nextElementSibling.querySelectorAll('.room-card');
+        // ブロック進捗
+        const updateRegionProgress = () => {
+        const hideClosed = document.body.classList.contains('hide-closed');
+        document.querySelectorAll('.accordion-header[data-region]').forEach(header => {
+        const region = header.dataset.region;
+        const cards = header.nextElementSibling.querySelectorAll('.room-card');
 
-                    let total = 0, visited = 0;
-                    cards.forEach(c => {
-                        if (hideClosed && c.dataset.closed === '1') return;
-                        total++;
-                        if (visitedData[c.dataset.id]) visited++;
-                    });
+        let total = 0, visited = 0;
+        cards.forEach(c => {
+        if (hideClosed && c.dataset.closed === '1') return;
+        total++;
+        if (visitedData[c.dataset.id]) visited++;
+        });
 
-                    const percent = total === 0 ? 0 : Math.floor(visited / total * 100);
+        const percent = total === 0 ? 0 : Math.floor(visited / total * 100);
 
-                    document.getElementById(`region-${region}-text`)
-                        .textContent = `${visited} / ${total}（${percent}%）`;
-                    document.getElementById(`region-${region}-bar`)
-                        .style.width = percent + "%";
-                });
-            };
+        document.getElementById(`region-${region}-text`)
+        .textContent = `${visited} / ${total}（${percent}%）`;
+        document.getElementById(`region-${region}-bar`)
+        .style.width = percent + "%";
+        });
+        };
 
-            // 都道府県進捗
-            const updatePrefProgress = () => {
-                const hideClosed = document.body.classList.contains('hide-closed');
-                document.querySelectorAll('.pref-header[data-pref]').forEach(header => {
-                    const pref = header.dataset.pref;
-                    const cards = header.nextElementSibling.querySelectorAll('.room-card');
+        // 都道府県進捗
+        const updatePrefProgress = () => {
+        const hideClosed = document.body.classList.contains('hide-closed');
+        document.querySelectorAll('.pref-header[data-pref]').forEach(header => {
+        const pref = header.dataset.pref;
+        const cards = header.nextElementSibling.querySelectorAll('.room-card');
 
-                    let total = 0, visited = 0;
-                    cards.forEach(c => {
-                        if (hideClosed && c.dataset.closed === '1') return;
-                        total++;
-                        if (visitedData[c.dataset.id]) visited++;
-                    });
+        let total = 0, visited = 0;
+        cards.forEach(c => {
+        if (hideClosed && c.dataset.closed === '1') return;
+        total++;
+        if (visitedData[c.dataset.id]) visited++;
+        });
 
-                    const percent = total === 0 ? 0 : Math.floor(visited / total * 100);
+        const percent = total === 0 ? 0 : Math.floor(visited / total * 100);
 
-                    document.getElementById(`pref-${pref}-text`).textContent = `${visited} / ${total}`;
-                    document.getElementById(`pref-${pref}-bar`).style.width = percent + "%";
-                });
-            };
+        document.getElementById(`pref-${pref}-text`).textContent = `${visited} / ${total}`;
+        document.getElementById(`pref-${pref}-bar`).style.width = percent + "%";
+        });
+        };
 
-            // 全国進捗
-            const updateOverallProgress = () => {
-                const hideClosed = document.body.classList.contains('hide-closed');
-                let total = 0, visited = 0;
+        // 全国進捗
+        const updateOverallProgress = () => {
+        const hideClosed = document.body.classList.contains('hide-closed');
+        let total = 0, visited = 0;
 
-                cards.forEach(c => {
-                    if (hideClosed && c.dataset.closed === '1') return;
-                    total++;
-                    if (visitedData[c.dataset.id]) visited++;
-                });
+        cards.forEach(c => {
+        if (hideClosed && c.dataset.closed === '1') return;
+        total++;
+        if (visitedData[c.dataset.id]) visited++;
+        });
 
-                const percent = total === 0 ? 0 : Math.floor(visited / total * 100);
+        const percent = total === 0 ? 0 : Math.floor(visited / total * 100);
 
-                document.getElementById('overall-text')
-                    .textContent = `${visited} / ${total}（${percent}%）`;
-                document.getElementById('overall-bar')
-                    .style.width = percent + "%";
-            };
+        document.getElementById('overall-text')
+        .textContent = `${visited} / ${total}（${percent}%）`;
+        document.getElementById('overall-bar')
+        .style.width = percent + "%";
+        };
 
-              // 初期ロード
-            const loadDataFromServer = async (userId) => {
-                const res = await fetch('/Data/GetAll?userId=@Model.User.UserId');
-                const list = await res.json();
+        // 初期ロード
+        const loadDataFromServer = async (userId) => {
+        const res = await fetch('/Data/GetAll?userId=@Model.User.UserId');
+        const list = await res.json();
 
-                visitedData = {};
-                list.forEach(x => {
-                    visitedData[x.roomId] = {
-                        date: x.date,
-                        angle: x.angle
-                    };
-                });
+        visitedData = {};
+        list.forEach(x => {
+        visitedData[x.roomId] = {
+        date: x.date,
+        angle: x.angle
+        };
+        });
 
-                renderView();
-            };
+        renderView();
+        };
 
-            const renderView = () => {
-                cards.forEach(card => {
-                    card.classList.remove('visited');
-                    const existing = card.querySelector('.stamp-mark');
-                    if (existing) existing.remove();
-                });
+        const renderView = () => {
+        cards.forEach(card => {
+        card.classList.remove('visited');
+        const existing = card.querySelector('.stamp-mark');
+        if (existing) existing.remove();
+        });
 
-                let count = 0;
-                cards.forEach(card => {
-                    const id = card.dataset.id;
-                    if (visitedData[id]) {
-                        count++;
-                        card.classList.add('visited');
+        let count = 0;
+        cards.forEach(card => {
+        const id = card.dataset.id;
+        if (visitedData[id]) {
+        count++;
+        card.classList.add('visited');
 
-                        const angle = visitedData[id].angle;
-                        let date = visitedData[id].date;
-                        if (date == null) {
-                            date = "";
-                        }
+        const angle = visitedData[id].angle;
+        let date = visitedData[id].date;
+        if (date == null) {
+        date = "";
+        }
 
-                        const stampHtml = `
-                            <div class="stamp-mark">
-                                <div class="stamp-inner" style="transform: rotate(${angle}deg);">
-                                    <span class="stamp-title">済👣</span>
-                                    <div class="stamp-date-line"></div>
-                                    <span class="stamp-date">${date}</span>
-                                </div>
-                            </div>`;
-                        card.insertAdjacentHTML('beforeend', stampHtml);
-                    }
-                });
+        const stampHtml = `
+        <div class="stamp-mark">
+        <div class="stamp-inner" style="transform: rotate(${angle}deg);">
+        <span class="stamp-title">済👣</span>
+        <div class="stamp-date-line"></div>
+        <span class="stamp-date">${date}</span>
+        </div>
+        </div>`;
+        card.insertAdjacentHTML('beforeend', stampHtml);
+        }
+        });
 
-                updateRegionProgress();
-                updatePrefProgress();
-                updateOverallProgress();
-            };
+        updateRegionProgress();
+        updatePrefProgress();
+        updateOverallProgress();
+        };
 
-            // アコーディオン
-            document.querySelectorAll('.accordion-header').forEach(h => {
-                h.addEventListener('click', () => {
-                    h.classList.toggle('open');
-                    h.nextElementSibling.classList.toggle('open');
-                });
-            });
-            document.querySelectorAll('.pref-header').forEach(h => {
-                h.addEventListener('click', () => {
-                    h.classList.toggle('open');
-                    h.nextElementSibling.classList.toggle('open');
-                });
-            });
+        // アコーディオン
+        document.querySelectorAll('.accordion-header').forEach(h => {
+        h.addEventListener('click', () => {
+        h.classList.toggle('open');
+        h.nextElementSibling.classList.toggle('open');
+        });
+        });
+        document.querySelectorAll('.pref-header').forEach(h => {
+        h.addEventListener('click', () => {
+        h.classList.toggle('open');
+        h.nextElementSibling.classList.toggle('open');
+        });
+        });
                    
-            loadDataFromServer(userId);
-            if (shareUrlInput.value) {
-                shareUrlInput.value = location.origin + shareUrlInput.value;
-            }
-            if (shareUrlInput.value) {
-                updateShareLinks(shareUrlInput.value);
-            }
+        loadDataFromServer(userId);
+        if (shareUrlInput.value) {
+        shareUrlInput.value = location.origin + shareUrlInput.value;
+        }
+        if (shareUrlInput.value) {
+        updateShareLinks(shareUrlInput.value);
+        }
 
-            @if (!Model.IsShare)
-            {
+        @if (!Model.IsShare)
+        {
             <text>
                 // 保存
-                    const saveToServer = async (userId, id, date, angle) => {
-                        await fetch('/Data/Save', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                            body: `userId=${userId}&roomId=${id}&date=${date}&angle=${angle}`
-                        });
-                    };
+                const saveToServer = async (userId, id, date, angle) => {
+                await fetch('/Data/Save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `userId=${userId}&roomId=${id}&date=${date}&angle=${angle}`
+                });
+                };
 
-                    // 削除
-                    const deleteFromServer = async (userId, id) => {
-                        await fetch('/Data/Delete', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                            body:  `userId=${userId}&roomId=${id}`
-                        });
-                    };
+                // 削除
+                const deleteFromServer = async (userId, id) => {
+                await fetch('/Data/Delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body:  `userId=${userId}&roomId=${id}`
+                });
+                };
 
-                    // モーダル
-                    const openModal = (card) => {
-                        currentCard = card;
-                        const id = card.dataset.id;
+                // モーダル
+                const openModal = (card) => {
+                currentCard = card;
+                const id = card.dataset.id;
 
-                        const modal = document.getElementById('dateModal');
-                        const input = document.getElementById('modalDateInput');
+                const modal = document.getElementById('dateModal');
+                const input = document.getElementById('modalDateInput');
 
-                        const today = new Date();
-                        const formatter = new Intl.DateTimeFormat('ja-JP', {
-                            timeZone: 'Asia/Tokyo',
-                            year: 'numeric',
-                            month: '2-digit',
-                            day: '2-digit'
-                        });
+                const today = new Date();
+                const formatter = new Intl.DateTimeFormat('ja-JP', {
+                timeZone: 'Asia/Tokyo',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+                });
 
-                        input.value = visitedData[id]?.date ?? formatter.format(today).replaceAll('/', '-');
-                        modal.style.display = 'flex';
-                    };
+                input.value = visitedData[id]?.date ?? formatter.format(today).replaceAll('/', '-');
+                modal.style.display = 'flex';
+                };
 
-                    const closeModal = () => {
-                        document.getElementById('dateModal').style.display = 'none';
-                    };
+                const closeModal = () => {
+                document.getElementById('dateModal').style.display = 'none';
+                };
 
-                        // カードクリック
-                        cards.forEach(card => {
-                            card.addEventListener('click', () => openModal(card));
-                        });
+                // カードクリック
+                cards.forEach(card => {
+                card.addEventListener('click', () => openModal(card));
+                });
 
-                        document.getElementById('modalSaveBtn').addEventListener('click', async () => {
-                            const date = document.getElementById('modalDateInput').value;
-                            const id = currentCard.dataset.id;
+                document.getElementById('modalSaveBtn').addEventListener('click', async () => {
+                const date = document.getElementById('modalDateInput').value;
+                const id = currentCard.dataset.id;
 
-                            if (!visitedData[id]) {
-                                visitedData[id] = {
-                                    angle: (Math.random() * 30 - 15).toFixed(1)
-                                };
-                            }
+                if (!visitedData[id]) {
+                visitedData[id] = {
+                angle: (Math.random() * 30 - 15).toFixed(1)
+                };
+                }
 
-                            visitedData[id].date = date;
+                visitedData[id].date = date;
 
-                            await saveToServer(userId, id, visitedData[id].date, visitedData[id].angle);
-                            renderView();
-                            closeModal();
-                        });
+                await saveToServer(userId, id, visitedData[id].date, visitedData[id].angle);
+                renderView();
+                closeModal();
+                });
 
-                        document.getElementById('modalSaveWithoutDateBtn').addEventListener('click', async () => {
-                            const id = currentCard.dataset.id;
+                document.getElementById('modalSaveWithoutDateBtn').addEventListener('click', async () => {
+                const id = currentCard.dataset.id;
 
-                            if (!visitedData[id]) {
-                                visitedData[id] = {
-                                    angle: (Math.random() * 30 - 15).toFixed(1)
-                                };
-                            }
+                if (!visitedData[id]) {
+                visitedData[id] = {
+                angle: (Math.random() * 30 - 15).toFixed(1)
+                };
+                }
 
-                            visitedData[id].date = "";
+                visitedData[id].date = "";
 
-                            await saveToServer(userId, id, visitedData[id].date, visitedData[id].angle);
-                            renderView();
-                            closeModal();
-                        });
+                await saveToServer(userId, id, visitedData[id].date, visitedData[id].angle);
+                renderView();
+                closeModal();
+                });
 
-                        document.getElementById('modalDeleteBtn').addEventListener('click', async () => {
-                            const id = currentCard.dataset.id;
-                            delete visitedData[id];
+                document.getElementById('modalDeleteBtn').addEventListener('click', async () => {
+                const id = currentCard.dataset.id;
+                delete visitedData[id];
 
-                            await deleteFromServer(userId,id);
-                            renderView();
-                            closeModal();
-                        });
+                await deleteFromServer(userId,id);
+                renderView();
+                closeModal();
+                });
 
-                        document.getElementById('modalCancelBtn').addEventListener('click', async () => {
-                            closeModal();
-                        });
+                document.getElementById('modalCancelBtn').addEventListener('click', async () => {
+                closeModal();
+                });
 
-                        resetBtn.addEventListener('click', async () => {
-                            if (!confirm('本当に全データ削除しますか？')) return;
+                resetBtn.addEventListener('click', async () => {
+                if (!confirm('本当に全データ削除しますか？')) return;
 
-                            await fetch('/Data/Reset', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                                body:  `userId=${userId}`
-                            });
+                await fetch('/Data/Reset', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body:  `userId=${userId}`
+                });
 
-                            visitedData = {};
-                            renderView();
-                        });
+                visitedData = {};
+                renderView();
+                });
 
-                        // URL表示
-                        const urlInput = document.getElementById('pageUrl');
-                        urlInput.value = location.href;
+                // URL表示
+                const urlInput = document.getElementById('pageUrl');
+                urlInput.value = location.href;
 
-                    });
+                });
 
-                    // ===== シェア用URL =====
-                    const createShareBtn = document.getElementById('createShareUrlBtn');
-                    const shareUrlInput = document.getElementById('shareUrl');
-                    const delShareBtn = document.getElementById('deleteShareUrlBtn');
+                // ===== シェア用URL =====
+                const createShareBtn = document.getElementById('createShareUrlBtn');
+                const shareUrlInput = document.getElementById('shareUrl');
+                const delShareBtn = document.getElementById('deleteShareUrlBtn');
 
-                    createShareBtn.addEventListener('click', async () => {
-                        createShareBtn.disabled = true;
-                        createShareBtn.textContent = '発行中...';
+                createShareBtn.addEventListener('click', async () => {
+                createShareBtn.disabled = true;
+                createShareBtn.textContent = '発行中...';
 
-                        const res = await fetch('/User/RegisterShareId', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                            body: `originalId=@Model.User.UserId`
-                        });
+                const res = await fetch('/User/RegisterShareId', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `originalId=@Model.User.UserId`
+                });
 
-                        const shareId = await res.text();
+                const shareId = await res.text();
 
-                        const url = `${location.origin}/s/${shareId}`;
-                        shareUrlInput.value = url;
-                        createShareBtn.disabled = true;
-                        delShareBtn.disabled = false;
-                        createShareBtn.textContent = 'シェア用URL発行';
-                        updateShareLinks(url);
-                    });
+                const url = `${location.origin}/s/${shareId}`;
+                shareUrlInput.value = url;
+                createShareBtn.disabled = true;
+                delShareBtn.disabled = false;
+                createShareBtn.textContent = 'シェア用URL発行';
+                updateShareLinks(url);
+                });
 
-                    delShareBtn.addEventListener('click', async () => {
-                                    const res = await fetch('/User/DeleteShareId', {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                                        body: `shareId=@Model.ShareId`
-                                    });
-                                     shareUrlInput.value = "";
-                                createShareBtn.disabled = false;
-                                        delShareBtn.disabled = true;
-                                document.getElementById('share-x').removeAttribute('href');
-                                document.getElementById('share-fb').removeAttribute('href')
-                                document.getElementById('share-line').removeAttribute('href')
-                    });
+                delShareBtn.addEventListener('click', async () => {
+                const res = await fetch('/User/DeleteShareId', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `shareId=@Model.ShareId`
+                });
+                shareUrlInput.value = "";
+                createShareBtn.disabled = false;
+                delShareBtn.disabled = true;
+                document.getElementById('share-x').removeAttribute('href');
+                document.getElementById('share-fb').removeAttribute('href')
+                document.getElementById('share-line').removeAttribute('href')
+                });
 
                 new Sortable(document.getElementById('region-sortable'), {
-                    animation: 150,
-                    handle: '.drag-handle'
+                animation: 150,
+                handle: '.drag-handle'
                 });
 
                 document.querySelectorAll('.pref-sortable').forEach(container => {
-                    new Sortable(container, {
-                        animation: 150,
-                        handle: '.drag-handle'
-                    });
+                new Sortable(container, {
+                animation: 150,
+                handle: '.drag-handle'
+                });
 
                 const toggleBtn = document.getElementById('toggleSortMode');
                 toggleBtn.onclick = async () => {
-                        if (sortMode) {
-                            await saveSortOrder();
-                        }
-                        sortMode = !sortMode;
+                if (sortMode) {
+                await saveSortOrder();
+                }
+                sortMode = !sortMode;
 
-                        document.body.classList.toggle('sort-mode', sortMode);
+                document.body.classList.toggle('sort-mode', sortMode);
 
-                        toggleBtn.textContent = sortMode
-                            ? '✅ 並び替え完了'
-                            : '🔀 並び替え';
+                toggleBtn.textContent = sortMode
+                ? '✅ 並び替え完了'
+                : '🔀 並び替え';
                 };
 
                 const resetSortBtn = document.getElementById('resetSort');
                 resetSortBtn.onclick = async () => {
-                        if (!confirm('並び順を初期状態に戻しますか？')) return;
-                        const payload = {
-                            userId: '@Model.User.UserId'
-                        };
+                if (!confirm('並び順を初期状態に戻しますか？')) return;
+                const payload = {
+                userId: '@Model.User.UserId'
+                };
 
-                        await fetch('/User/ResetDisplayOrder', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                            body: `userId=@Model.User.UserId`
-                        });
-                        location.reload();
+                await fetch('/User/ResetDisplayOrder', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `userId=@Model.User.UserId`
+                });
+                location.reload();
                 };
 
                 const collectSortOrder = () => {
-                    const regions = [];
+                const regions = [];
 
-                    document.querySelectorAll('.accordion-region').forEach((regionEl, regionIndex) => {
-                        const centerId = regionEl.dataset.centerId;
+                document.querySelectorAll('.accordion-region').forEach((regionEl, regionIndex) => {
+                const centerId = regionEl.dataset.centerId;
 
-                        const prefs = [];
-                        regionEl.querySelectorAll('.pref-block').forEach((prefEl, prefIndex) => {
-                            prefs.push({
-                                prefId: prefEl.dataset.prefId,
-                                displayOrder: prefIndex
-                            });
-                        });
+                const prefs = [];
+                regionEl.querySelectorAll('.pref-block').forEach((prefEl, prefIndex) => {
+                prefs.push({
+                prefId: prefEl.dataset.prefId,
+                displayOrder: prefIndex
+                });
+                });
 
-                        regions.push({
-                            centerBlockId: centerId,
-                            displayOrder: regionIndex,
-                            prefectures: prefs
-                        });
-                    });
+                regions.push({
+                centerBlockId: centerId,
+                displayOrder: regionIndex,
+                prefectures: prefs
+                });
+                });
 
-                    return regions;
+                return regions;
                 };
 
                 const saveSortOrder = async () => {
-                    const payload = {
-                        userId: '@Model.User.UserId',
-                        regions: collectSortOrder()
-                    };
-
-                    await fetch('/User/SaveDisplayOrder', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
+                const payload = {
+                userId: '@Model.User.UserId',
+                regions: collectSortOrder()
                 };
-                </text>
-            }
+
+                await fetch('/User/SaveDisplayOrder', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+                });
+                };
+            </text>
+        }
         });
     </script>
 </body>
