@@ -85,7 +85,8 @@ namespace KenketsuNoAshiato.Controllers
             {
                 User = u,
                 Rooms = Master.KenketsuRooms,
-                IsShare = isShare
+                IsShare = isShare,
+                ShowClosedDefault = u.ShowClosedDefault
             };
             int[] roomsPref = usermodel.Rooms.Select(r => r.PrefId).Distinct().ToArray();
             var pOrders = _context.PrefOrders
@@ -180,6 +181,16 @@ namespace KenketsuNoAshiato.Controllers
             _context.CenterBlockOrders.RemoveRange(cOders);
             var pOrders = _context.PrefOrders.Where(pdo => pdo.UserId == userId);
             _context.PrefOrders.RemoveRange(pOrders);
+            _context.SaveChanges();
+            return Ok();
+        }
+
+        [HttpPost]
+        public IActionResult SaveShowClosedDefault(string userId, bool showClosed)
+        {
+            User? u = _context.Users.Find(userId);
+            if (u == null) return NotFound();
+            u.ShowClosedDefault = showClosed;
             _context.SaveChanges();
             return Ok();
         }

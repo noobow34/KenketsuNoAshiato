@@ -20,4 +20,7 @@ public partial class User
     [Column("user_name")]
     [StringLength(50)]
     public string? UserName { get; set; }
+
+    [Column("show_closed_default")]
+    public bool ShowClosedDefault { get; set; } = false;
 }

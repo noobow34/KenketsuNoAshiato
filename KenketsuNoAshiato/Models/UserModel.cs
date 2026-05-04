@@ -14,5 +14,7 @@ namespace KenketsuNoAshiato.Models
         public bool IsShare { get; set; }
 
         public string ShareId { get; set; } = string.Empty;
+
+        public bool ShowClosedDefault { get; set; } = false;
     }
 }
