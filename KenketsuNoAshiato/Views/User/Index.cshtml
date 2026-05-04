@@ -936,7 +936,7 @@
 
                             <div class="pref-content open">
                                 <div class="room-list">
-                                    @foreach (var r in Model.Rooms.Where(r => r.PrefId == p.PrefId).OrderBy(r => r.DisplayOrder))
+                                    @foreach (var r in Model.Rooms.Where(r => r.PrefId == p.PrefId).OrderBy(r => r.IsClosed).ThenBy(r => r.DisplayOrder))
                                     {
                                         <div class="room-card @(r.IsClosed ? "closed" : "")" data-id="@r.RoomId" data-closed="@(r.IsClosed ? "1" : "0")">
                                             @if (r.IsClosed)
