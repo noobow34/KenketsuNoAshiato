@@ -34,12 +34,12 @@ public class HomeController : Controller
         return View("Redirect");
     }
 
-    // /s/{shareId} → 転送案内
+    // /s/{shareId} → 転送案内（閲覧共有ページ）
     [Route("s/{shareId}")]
     public IActionResult Share(string shareId)
     {
         ViewBag.Destination = $"{NewSite}/s/{shareId}";
-        return View("Redirect");
+        return View("ShareRedirect");
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

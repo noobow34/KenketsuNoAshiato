@@ -1,0 +1,26 @@
+@{
+    Layout = "~/Views/Shared/_Redirect.cshtml";
+    var destination = ViewBag.Destination as string ?? "https://kenketsu.noobow.me/";
+}
+
+<div class="logo">🩸</div>
+<div class="site-name">けんけつノート</div>
+<div class="badge">🔄 サービス統合のお知らせ</div>
+
+<h1>「献血のあしあと」は<br>「けんけつノート」に統合されました</h1>
+
+<p class="desc">
+    このページは新サービス「けんけつノート」に移転しました。<br>
+    下のボタンから引き続きご覧いただけます。
+</p>
+
+<div class="new-url">@destination</div>
+
+<button class="btn" onclick="go()">新サイトへ進む →</button>
+<p class="sub">移動先：@destination</p>
+
+<script>
+function go() {
+    window.location.href = '@destination';
+}
+</script>
