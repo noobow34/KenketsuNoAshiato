@@ -1,0 +1,30 @@
+@* 転送案内ページの共通レイアウト *@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>けんけつノートへ移転しました</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN',Meiryo,sans-serif;background:#fff5f5;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+.card{background:white;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.10);padding:32px 28px;max-width:440px;width:100%;text-align:center;}
+.logo{font-size:2.2rem;margin-bottom:6px;}
+.site-name{font-size:1.1rem;font-weight:700;color:#b71c1c;margin-bottom:20px;}
+.badge{display:inline-block;background:#fff3cd;color:#856404;border:1px solid #ffc107;border-radius:20px;padding:4px 14px;font-size:0.78rem;font-weight:700;margin-bottom:20px;}
+h1{font-size:1.15rem;font-weight:700;color:#333;margin-bottom:12px;}
+.desc{font-size:0.88rem;color:#666;line-height:1.7;margin-bottom:24px;}
+.new-url{background:#fff8f8;border:1px solid #ffcdd2;border-radius:8px;padding:10px 14px;font-size:0.82rem;color:#b71c1c;font-family:monospace;word-break:break-all;margin-bottom:24px;}
+.notice{background:#e8f5e9;border-radius:8px;padding:12px 14px;font-size:0.82rem;color:#2e7d32;line-height:1.6;margin-bottom:24px;text-align:left;}
+.notice strong{display:block;margin-bottom:4px;}
+.btn{display:block;width:100%;padding:14px;background:#d32f2f;color:white;border:none;border-radius:30px;font-size:1rem;font-weight:700;cursor:pointer;text-decoration:none;transition:background 0.15s;}
+.btn:hover{background:#b71c1c;}
+.sub{font-size:0.75rem;color:#aaa;margin-top:14px;}
+</style>
+</head>
+<body>
+<div class="card">
+    @RenderBody()
+</div>
+</body>
+</html>
