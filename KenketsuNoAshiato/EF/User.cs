@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KenketsuNoAshiato.EF;
 
-[Table("users", Schema = "ashiato")]
+[Table("users", Schema = "kenketsu")]
 public partial class User
 {
     [Key]

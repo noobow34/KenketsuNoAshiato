@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KenketsuNoAshiato.EF
 {
-    [Table("share_mapping", Schema = "ashiato")]
+    [Table("share_mapping", Schema = "kenketsu")]
     public class ShareMapping
     {
         [Key]

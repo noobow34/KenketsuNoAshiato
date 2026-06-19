@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KenketsuNoAshiato.EF;
 
-[Table("pref_order", Schema = "ashiato")]
+[Table("pref_order", Schema = "kenketsu")]
 public partial class PrefOrder
 {
     [Key]

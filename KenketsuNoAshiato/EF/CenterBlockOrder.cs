@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KenketsuNoAshiato.EF;
 
-[Table("center_block_order", Schema = "ashiato")]
+[Table("center_block_order", Schema = "kenketsu")]
 public partial class CenterBlockOrder
 {
     [Key]
