@@ -18,11 +18,11 @@ public class HomeController : Controller
         return View();
     }
 
-    // /u/{userId} → 転送案内（同じユーザーページへ）
+    // /u/{userId} → 全国スタンプページへ転送
     [Route("u/{userId}")]
     public IActionResult UserPage(string userId)
     {
-        ViewBag.Destination = $"{NewSite}/u/{userId}";
+        ViewBag.Destination = $"{NewSite}/u/{userId}/stamp";
         return View("Redirect");
     }
 
@@ -30,7 +30,7 @@ public class HomeController : Controller
     [Route("u/{userId}/{**rest}")]
     public IActionResult UserSub(string userId, string? rest)
     {
-        ViewBag.Destination = $"{NewSite}/u/{userId}/{rest}".TrimEnd('/');
+        ViewBag.Destination = $"{NewSite}/u/{userId}/stamp";
         return View("Redirect");
     }
 
