@@ -1,6 +1,7 @@
 @{
     Layout = "~/Views/Shared/_Redirect.cshtml";
     var destination = ViewBag.Destination as string ?? "https://kenketsu.noobow.me/";
+    var displayUrl  = ViewBag.DisplayUrl  as string ?? destination;
 }
 
 <div class="logo">🩸</div>
@@ -20,10 +21,10 @@
     この転送ページは将来的に終了する予定です。
 </div>
 
-<div class="new-url">@destination</div>
+<div class="new-url">@displayUrl</div>
 
 <button class="btn" onclick="go()">新サイトへ進む →</button>
-<p class="sub">移動先：@destination</p>
+<p class="sub">移動先：@displayUrl</p>
 
 <script>
 function go() {

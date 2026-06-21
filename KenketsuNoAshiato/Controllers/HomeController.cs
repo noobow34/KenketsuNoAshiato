@@ -22,7 +22,8 @@ public class HomeController : Controller
     [Route("u/{userId}")]
     public IActionResult UserPage(string userId)
     {
-        ViewBag.Destination = $"{NewSite}/u/{userId}/stamp";
+        ViewBag.Destination    = $"{NewSite}/u/{userId}/stamp?from=ashiato";
+        ViewBag.DisplayUrl     = $"{NewSite}/u/{userId}/stamp";
         return View("Redirect");
     }
 
@@ -30,7 +31,8 @@ public class HomeController : Controller
     [Route("u/{userId}/{**rest}")]
     public IActionResult UserSub(string userId, string? rest)
     {
-        ViewBag.Destination = $"{NewSite}/u/{userId}/stamp";
+        ViewBag.Destination    = $"{NewSite}/u/{userId}/stamp?from=ashiato";
+        ViewBag.DisplayUrl     = $"{NewSite}/u/{userId}/stamp";
         return View("Redirect");
     }
 
